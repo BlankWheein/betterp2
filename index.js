@@ -5,11 +5,14 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+var request = require("request");
+const API_KEY = "AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM";
+
 port = process.env.PORT || 3000
 
 
-var etSted = {
-    arr: []
+var places = {
+    
 }
 
 
@@ -44,13 +47,57 @@ const kage = {
 
  ]
 }
+
+
+app.get("/api/latlng/:lat/:lng", (req, res) => {
+    var lat = req.params.lat;
+    var lng = req.params.lng;
+
+    var BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
+    var url = BASE_URL + `${lat}, ${lng}` + "&key=" + API_KEY;
+    if (`${lat}, ${lng}` in places) {
+        res.json(places[`${lat}, ${lng}`].adresses);
+    } else {
+    request(url, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log("Added address");
+            let adress = JSON.parse(body).results[0].formatted_address;
+            console.log(adress);
+            if (!(`${lat}, ${lng}` in places)) {
+                places[`${lat}, ${lng}`] = {
+                    adresses: []
+                };
+            }
+
+                let inArr = false;
+                places[`${lat}, ${lng}`].adresses.forEach(element => {
+                    if (element == adress) {
+                        inArr = true;
+                    }
+                });
+                if (!inArr) {
+                    places[`${lat}, ${lng}`].adresses.push(adress);
+                }
+            res.json(places[`${lat}, ${lng}`].adresses);
+        }
+        else {
+            // The request failed, handle it
+        }
+    });
+}
+
+    console.log(places);
+})
+
+
+
 app.get("/api/get", (req, res_) => {
     res_.json({"data": kage});
 })
 
 app.post("/api", (req, res) => {
     etSted.arr.push(req.body);
-    console.log(req.body);
+    console.log(etSted);
     res.send("OK");
 })
 

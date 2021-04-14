@@ -22,6 +22,11 @@ function initMap() {
       strictBounds: false,
     },
   });
+  const infowindow = new google.maps.InfoWindow();
+  document.getElementById("submit").addEventListener("click", () => {
+    alert("Fuck You");
+    geocodeLatLng(geocoder, map, infowindow);
+  });
   const directionsService = new google.maps.DirectionsService();
   const directionsRenderer = new google.maps.DirectionsRenderer({
     draggable: true,
@@ -127,6 +132,54 @@ window.addEventListener("click", function() {
     }
 }, true);
 }
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+function geocodeLatLngMany(arr)
+ {
+   result = [];
+   let count = 0;
+
+   arr.forEach(element => {
+  var geocoder = new google.maps.Geocoder();
+     count+= 2000;
+     sleep(count).then(() => {
+      const latlng = {
+        lat: parseFloat(element.lat),
+        lng: parseFloat(element.lng),
+      };
+       fetch(`api/latlng/${latlng.lat}/${latlng.lng}`);
+     });
+   })
+   return result;
+  }
+function geocodeLatLng(geocoder, map, infowindow) {
+  const input = document.getElementById("latlng").textContent;
+  const latlngStr = input.split(",", 2);
+  const latlng = {
+    lat: parseFloat(latlngStr[0]),
+    lng: parseFloat(latlngStr[1]),
+  };
+  geocoder.geocode({ location: latlng }, (results, status) => {
+    if (status === "OK") {
+      if (results[0]) {
+        map.setZoom(11);
+        console.log(results);   
+        const marker = new google.maps.Marker({
+          position: latlng,
+          map: map,
+        });
+        infowindow.setContent(results[0].formatted_address);
+        infowindow.open(map, marker);
+      } else {
+        window.alert("No results found");
+      }
+    } else {
+      window.alert("Geocoder failed due to: " + status);
+    }
+  });
+}
+
 
 function displayRoute(origin, destination, service, display) {
   waypoints = JSON.parse(localStorage.getItem("waypoints"));
@@ -184,6 +237,17 @@ function computeTotalDistance(result) {
       }
     }
   }
+  var test = {
+    arr: []
+  }
+  result.routes[0].overview_path.forEach(element => {
+    test.arr.push({lat: element.lat(),
+                   lng: element.lng()});
+  });
+  console.log(test);
+  var test2 = geocodeLatLngMany(test.arr);
+  console.log(test2);
+  return;
   var myPosition = new google.maps.LatLng(57.05497621434606, 9.920080776449737);
   var on_bridge = false;
   //console.clear();
