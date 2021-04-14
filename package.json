@@ -1,0 +1,24 @@
+{
+  "name": "betterp2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@mapbox/polyline": "^1.1.1",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "serve": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlankWheein/betterp2.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BlankWheein/betterp2/issues"
+  },
+  "homepage": "https://github.com/BlankWheein/betterp2#readme"
+}
