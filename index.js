@@ -7,6 +7,12 @@ app.use(bodyParser.urlencoded({
 }));
 port = process.env.PORT || 3000
 
+
+var etSted = {
+    arr: []
+}
+
+
 app.listen(port, "0.0.0.0", () => console.log(`Listening at ${port}`))
 app.use(express.static(__dirname + '/public'));
 app.use(express.json({ limit: "5mb" }));
@@ -43,6 +49,7 @@ app.get("/api/get", (req, res_) => {
 })
 
 app.post("/api", (req, res) => {
+    etSted.arr.push(req.body);
     console.log(req.body);
     res.send("OK");
 })

@@ -24,7 +24,7 @@
       'Content-Type': 'application/json'
     },
           body: JSON.stringify({
-            waypoints: json.parse(localStorage.getItem("waypoints"))
+            waypoints: JSON.parse(localStorage.getItem("waypoints"))
           })
         }).catch()
       } 
