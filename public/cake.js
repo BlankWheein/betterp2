@@ -148,7 +148,7 @@ function geocodeLatLngMany(arr)
         lat: parseFloat(element.lat),
         lng: parseFloat(element.lng),
       };
-       fetch(`api/latlng/${latlng.lat}/${latlng.lng}`);
+       //fetch(`api/latlng/${latlng.lat}/${latlng.lng}`);
      });
    })
    return result;
