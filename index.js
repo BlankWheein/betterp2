@@ -21,6 +21,7 @@ app.listen(port, "0.0.0.0", () => console.log(`Listening at ${port}`))
 app.use(express.static(__dirname + '/public'));
 app.use(express.json({ limit: "5mb" }));
 
+/* Bliver ikke brugt */
 const roads = [
     {north: 57.05606711324675 ,
     south: 57.053145887754454,
@@ -28,6 +29,7 @@ const roads = [
     east: 9.9207438951786,}
 ]
 
+/* Bliver ikke brugt */
 const kage = {
  roads: [
      {
@@ -110,11 +112,12 @@ function getRoute(lat, lng) {
 }
 
 
-
+/* Bliver ikke brugt */
 app.get("/api/get", (req, res_) => {
     res_.json({"data": kage});
 })
 
+/* Bliver ikke brugt */
 app.post("/api/decode_poly", async (req, res_) => {
         const poly_str = req.body.value;
         console.log(poly_str);
