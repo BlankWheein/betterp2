@@ -24,8 +24,7 @@ function initMap() {
   });
   const infowindow = new google.maps.InfoWindow();
   document.getElementById("submit").addEventListener("click", () => {
-    alert("Fuck You Morten");
-    
+    alert("Fuck You Markus");
   });
   const directionsService = new google.maps.DirectionsService();
   const directionsRenderer = new google.maps.DirectionsRenderer({
@@ -195,7 +194,6 @@ function geocodeLatLng(geocoder, map, infowindow) {
     }
   });
 }
-
 
 function displayRoute(origin, destination, service, display) {
   waypoints = JSON.parse(localStorage.getItem("waypoints"));

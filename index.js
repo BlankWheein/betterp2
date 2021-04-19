@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-var polyline = require('@mapbox/polyline');
 const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
 app.use(bodyParser.urlencoded({
@@ -10,12 +9,7 @@ var request = require("request");
 const API_KEY = "AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM";
 
 port = process.env.PORT || 3000
-
-
-var places = {
-    
-}
-
+var places = {}
 
 app.listen(port, "0.0.0.0", () => console.log(`Listening at ${port}`))
 app.use(express.static(__dirname + '/public'));
@@ -67,7 +61,6 @@ app.post("/api/get/route", (req, res) => {
     res.send("OK");
 })
 
-
 function getRoute(lat, lng) {
 
     var BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
@@ -92,7 +85,6 @@ function getRoute(lat, lng) {
                     adresses: []
                 };
             }
-
                 let inArr = false;
                 places[`${lat}, ${lng}`].adresses.forEach(element => {
                     if (element == adress) {
