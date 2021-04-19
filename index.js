@@ -15,35 +15,6 @@ app.listen(port, "0.0.0.0", () => console.log(`Listening at ${port}`))
 app.use(express.static(__dirname + '/public'));
 app.use(express.json({ limit: "5mb" }));
 
-/* Bliver ikke brugt */
-const roads = [
-    {north: 57.05606711324675 ,
-    south: 57.053145887754454,
-    west: 9.919136276036307,
-    east: 9.9207438951786,}
-]
-
-/* Bliver ikke brugt */
-const kage = {
- roads: [
-     {
-         latlng: ["57.05646892170597, 9.921632711107629", "57.05315625292653, 9.91810365934949"],
-         class: "50",
-         name: "limbro"
-     }, {
-         latlng: ["57.05543771404789, 9.90393631735949", "57.05483820054797, 9.90630806164284", "57.05387545791453, 9.908802516003732", "57.052950617998846, 9.913576847958877", "57.05272888638353, 9.917417771313884", "57.05149475075868, 9.919799572883232", "57.050298504502095, 9.924048191935793", "57.04959532712729, 9.925416118586721", "57.04838734821002, 9.92655337520999", "57.046992579710725, 9.931590563648117", "57.04693422004477, 9.937486059076964", "57.04673287852574, 9.943891174203804", "57.04655415061863, 9.950064947737639"],
-         class: "100",
-         name: "strandvej"
-     }, {
-         latlng: ["57.05281276529587, 9.915099671115646", "57.051826629361116, 9.919090797951863"],
-         class: "100",
-         name: "loop"
-     }, {
-         latlng: [""]
-     }
-
- ]
-}
 
 app.post("/api/get/route", (req, res) => {
     const body = req.body;
@@ -102,45 +73,4 @@ function getRoute(lat, lng) {
     });
 }
 }
-
-
-/* Bliver ikke brugt */
-app.get("/api/get", (req, res_) => {
-    res_.json({"data": kage});
-})
-
-/* Bliver ikke brugt */
-app.post("/api/decode_poly", async (req, res_) => {
-        const poly_str = req.body.value;
-        console.log(poly_str);
-        const cake = polyline.decode(`${poly_str}`);
-        console.log(cake);
-        for (i = 0; i < cake.length-1; i++) {
-            let lat2 = cake[i+1][0];
-            let long2 = cake[i+1][1];
-            let lat = cake[i][0];
-            let long = cake[i][1];
-            let lat_n, lat_s, long_e, long_w;
-            if (lat2 > lat) {
-                lat_n = lat2;
-                lat_s = lat;
-            } else {
-                lat_n = lat;
-                lat_s = lat2;
-            }
-
-            if (long2 > long) {
-                long_e = long2;
-                long_w = long;
-            } else {
-                long_e = long;
-                long_w = long2;
-            }
-            console.log(lat_n, long_e, lat_s, long_w);
-            var next = false;
-            const pointInRect = (x > x1 && x < x2) && (y > y1 && y < y2)
-           };
-        console.log("DONE");
-        res_.json({cake});
-});
 
