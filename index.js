@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 var polyline = require('@mapbox/polyline');
 const bodyParser = require("body-parser");
+const fetch = require("node-fetch");
 app.use(bodyParser.urlencoded({
     extended: true
 }));
@@ -48,20 +49,41 @@ const kage = {
  ]
 }
 
+app.post("/api/get/route", (req, res) => {
+    const body = req.body;
+    body["route"] = []
+    inc = 0;
+    body.arr.forEach(element => {
+        if (`${element.lat}, ${element.lng}` in places) {
+            console.log(places[`${element.lat}, ${element.lng}`].adresses);
+        } else {
+        setTimeout(getRoute, 2000+inc, element.lat, element.lng)
+        inc += 2000;
+        }
+        return;
+    });
+    res.send("OK");
+})
 
-app.get("/api/latlng/:lat/:lng", (req, res) => {
-    var lat = req.params.lat;
-    var lng = req.params.lng;
+
+function getRoute(lat, lng) {
 
     var BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
     var url = BASE_URL + `${lat}, ${lng}` + "&key=" + API_KEY;
     if (`${lat}, ${lng}` in places) {
-        res.json(places[`${lat}, ${lng}`].adresses);
+        return places[`${lat}, ${lng}`].adresses;
     } else {
     request(url, function (error, response, body) {
         if (!error && response.statusCode == 200) {
             console.log("Added address");
-            let adress = JSON.parse(body).results[0].formatted_address;
+            body = JSON.parse(body);
+            let adress;
+            try {
+                adress = body.results[0].formatted_address;
+                console.log(body.results[0].formatted_address);
+            } catch (error) {
+                return null;
+            }
             console.log(adress);
             if (!(`${lat}, ${lng}` in places)) {
                 places[`${lat}, ${lng}`] = {
@@ -78,27 +100,19 @@ app.get("/api/latlng/:lat/:lng", (req, res) => {
                 if (!inArr) {
                     places[`${lat}, ${lng}`].adresses.push(adress);
                 }
-            res.json(places[`${lat}, ${lng}`].adresses);
+            return places[`${lat}, ${lng}`].adresses;
         }
         else {
-            // The request failed, handle it
+            return null;
         }
     });
 }
-
-    console.log(places);
-})
+}
 
 
 
 app.get("/api/get", (req, res_) => {
     res_.json({"data": kage});
-})
-
-app.post("/api", (req, res) => {
-    etSted.arr.push(req.body);
-    console.log(etSted);
-    res.send("OK");
 })
 
 app.post("/api/decode_poly", async (req, res_) => {

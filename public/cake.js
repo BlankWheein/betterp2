@@ -24,8 +24,8 @@ function initMap() {
   });
   const infowindow = new google.maps.InfoWindow();
   document.getElementById("submit").addEventListener("click", () => {
-    alert("Fuck You");
-    geocodeLatLng(geocoder, map, infowindow);
+    alert("Fuck You Morten");
+    
   });
   const directionsService = new google.maps.DirectionsService();
   const directionsRenderer = new google.maps.DirectionsRenderer({
@@ -36,6 +36,23 @@ function initMap() {
   directionsRenderer.addListener("directions_changed", () => {
     console.log(map);
     computeTotalDistance(directionsRenderer.getDirections());
+    var test = {
+      arr: []
+    }
+    directionsRenderer.getDirections().routes[0].overview_path.forEach(element => {
+      test.arr.push({lat: element.lat(),
+                     lng: element.lng()});
+    });
+    console.log(test);
+    fetch("/api/get/route", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        },
+      body: JSON.stringify({
+        arr: test.arr
+      })
+    })
   });
   displayRoute(
     waypoints.origin,
@@ -141,7 +158,6 @@ function geocodeLatLngMany(arr)
    let count = 0;
 
    arr.forEach(element => {
-  var geocoder = new google.maps.Geocoder();
      count+= 2000;
      sleep(count).then(() => {
       const latlng = {
