@@ -24,7 +24,33 @@ function initMap() {
   });
   const infowindow = new google.maps.InfoWindow();
   document.getElementById("submit").addEventListener("click", () => {
+    if (localStorage.getItem("submitEnabled") == "false") {return;} else {
     alert("Fuck You Markus");
+    localStorage.setItem("submitEnabled", "false");
+    var test = {
+      arr: []
+    }
+    directionsRenderer.getDirections().routes[0].overview_path.forEach(element => {
+      test.arr.push({lat: element.lat(),
+                     lng: element.lng()});
+    });
+    console.log(test);
+    fetch("/api/get/route", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+        },
+      body: JSON.stringify({
+        arr: test.arr
+      })
+    }).then(data => data.json()).then(data => console.log(data)).then(data => {
+      alert("Route has been recieved!");
+      localStorage.setItem("submitEnabled", "true");
+    }).catch(error => {
+      localStorage.setItem("submitEnabled", "true");
+      console.log(error);
+    })
+  }
   });
   const directionsService = new google.maps.DirectionsService();
   const directionsRenderer = new google.maps.DirectionsRenderer({
@@ -43,15 +69,7 @@ function initMap() {
                      lng: element.lng()});
     });
     console.log(test);
-    fetch("/api/get/route", {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-        },
-      body: JSON.stringify({
-        arr: test.arr
-      })
-    })
+    
   });
   displayRoute(
     waypoints.origin,
