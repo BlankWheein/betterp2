@@ -35,21 +35,9 @@ function initMap() {
                      lng: element.lng()});
     });
     console.log(test);
-    fetch("/api/get/route", {
-      method: "POST",
-      headers: {
-        'Content-Type': 'application/json',
-        },
-      body: JSON.stringify({
-        arr: test.arr
-      })
-    }).then(data => data.json()).then(data => console.log(data)).then(data => {
-      alert("Route has been recieved!");
-      localStorage.setItem("submitEnabled", "true");
-    }).catch(error => {
-      localStorage.setItem("submitEnabled", "true");
-      console.log(error);
-    })
+    let data2 = fetchRetry("/api/get/route", {arr: test.arr}, "12345678");
+    let data = fetchRetry("/api/get/route_adress", {arr: test.arr}, "Not in Places");
+    
   }
   });
   const directionsService = new google.maps.DirectionsService();
@@ -238,6 +226,33 @@ function displayRoute(origin, destination, service, display) {
       }
     }
   );
+}
+
+function fetchRetry(url, body, error) {
+  fetch(url, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      },
+    body: JSON.stringify(body)
+  }).then(data => data.json()).then(data => {
+    if (`status` in data) {
+      if (data.status == error) {
+        return setTimeout(fetchRetry, 5000, url, body, error);
+      }
+      
+    }
+    if (url == "/api/get/route_adress") {
+      localStorage.setItem("submitEnabled", "true");
+    }
+    console.log(data.body);
+    return data;
+    
+  }).catch(error_ => {
+    console.log(error_);
+    localStorage.setItem("submitEnabled", "true");
+    setTimeout(fetchRetry, 5000, url, body, error);
+  })
 }
 
 function computeTotalDistance(result) {

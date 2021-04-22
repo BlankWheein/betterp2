@@ -24,43 +24,93 @@ app.post("/api/get/route", (req, res) => {
     body["route"] = []
     console.log(Date.now());
     inc = 0;
-    let last = false;
     body.arr.forEach((i, idx) => {
         body.arr[idx].lat = body.arr[idx].lat.toFixed(5);
         body.arr[idx].lng = body.arr[idx].lng.toFixed(5);
     })
+    res.json({message: "OK"});
     body.arr.forEach((i , idx, array) => {
         if (body.arr.length - 1 == idx) {
             last = true;
-            return getRoute(i.lat, i.lng, last, res, body, idx)
+            return getRoute(i.lat, i.lng, body, idx)
         }
         if (`${i.lat}, ${i.lng}` in places) {
         } else {
-            getRoute(i.lat, i.lng, last, res, body, idx)
+            getRoute(i.lat, i.lng, body, idx)
         }
         return;
     });
 })
 
+app.post("/api/get/route_adress", (req, res) => {
+    inRoute = true;
+    console.log("route_adress");
+    let body = req.body;
+    body.arr.forEach((i, idx) => {
+        body.arr[idx].lat = body.arr[idx].lat.toFixed(5);
+        body.arr[idx].lng = body.arr[idx].lng.toFixed(5);
+    })
+    body["route"] = []
+    body.arr.forEach(element => {
+        if (!(`${element.lat}, ${element.lng}` in places)) {
+            inRoute = false;
+        }
+    })
+    if (inRoute) {
+        sendDone(res, body);
+    } else {
+        res.json({"status": "Not in Places"});
+    }
+})
+function checkBody(body) {
+    body["places"] = []
+    console.log(body);
+    class50 = ["Limfjordsbroen", "Vesterbro 106"];
+    class100 = ["Limfjordstunnelen"];
+
+    body.route.forEach(e => {
+        console.log([e.adresses[0], "limfjordsbroen"]);
+        appended = false;
+        if (!appended) {
+            for (i = 0; i < 2; i++) {
+                if (e.adresses[0].search(`${class50[i]}`) != -1) {
+                    body.places.push(50);
+                    appended = true;
+                    return;
+                }}}
+        
+        if (!appended) {
+            for (i = 0; i < 1; i++) {
+                if (e.adresses[0].search(`${class100[i]}`) != -1) {
+                    body.places.push(100);
+                    appended = true;
+                    return;
+                }}}
+        
+        if (!appended) {
+            body.places.push("NAN");
+        }
+        
+    })
+    return body;
+}
+
 function sendDone(res, body) {
     console.log(Date.now());
-    
     body.arr.forEach(element => {
         if (`${element.lat}, ${element.lng}` in places) {
             body.route.push(places[`${element.lat}, ${element.lng}`]);
         }
     })
+    body = checkBody(body);
     res.json({body: body});
 }
 
 
-var getRoute = rateLimit(1, 2000, function (lat, lng, last, res, body, idx) {
+var getRoute = rateLimit(1, 2000, function (lat, lng, body, idx) {
     console.log(idx, body.arr.length);
     var BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
     var url = BASE_URL + `${lat}, ${lng}` + "&key=" + API_KEY;
-    if (last) {
-        setTimeout(sendDone, 2000, res, body);
-    }
     if (`${lat}, ${lng}` in places) {
         return places[`${lat}, ${lng}`].adresses;
     } else {
