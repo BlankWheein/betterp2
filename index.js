@@ -106,9 +106,29 @@ function sendDone(res, body) {
     res.json({body: body});
 }
 
+app.post("/getaddress", (req, res) => {
+    getLatLng(req.body.start, (data) => {
+        getLatLng(req.body.end, (data2) => {
+            res.json({status: 200, "message": "OK", "DATA": [data, data2]});
+        })
+    });
+})
+
+var getLatLng = rateLimit(1, 2000, function(address, callback) {
+    var BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?address=";
+    var url = BASE_URL + `${address}` + "&key=" + API_KEY;
+    request(url, function(error, response, body) {
+        if (!error && response.statusCode == 200) {
+            body = JSON.parse(body);
+            callback(body.results[0])
+        } else {
+            callback(null);
+        }
+    })
+})
 
 var getRoute = rateLimit(1, 2000, function (lat, lng, body, idx) {
-    console.log(idx, body.arr.length);
+        console.log(idx, body.arr.length);
     var BASE_URL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
     var url = BASE_URL + `${lat}, ${lng}` + "&key=" + API_KEY;
     if (`${lat}, ${lng}` in places) {

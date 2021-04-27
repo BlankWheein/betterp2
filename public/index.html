@@ -17,38 +17,11 @@
         localStorage.setItem("submitEnabled", true);
         localStorage.setItem("origin", "57.052917108718304, 9.913270353805629");
         localStorage.setItem("destination", "57.013165810575636, 9.96777520600427");
-      document.getElementById("cake").onclick = () => {
-        fetch("/api", {
-          method: "POST",
-          headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-          body: JSON.stringify({
-            waypoints: JSON.parse(localStorage.getItem("waypoints"))
-          })
-        }).catch()
-      } 
       }
-
-
-      
-    </script>
-
-
-    <script>
-      
     </script>
 
     </div>
     <div id="map"></div>
-    <div class="menu" id="menu">
-      <div id=add_none class="menu-item"><i class="glyphicon glyphicon-file"></i>Add None</div>
-      <div id=add_waypoint class="menu-item"><i class="glyphicon glyphicon-file"></i>Add Waypoint</div>
-
-      <div id=add_origin class="menu-item"><i class="glyphicon glyphicon-file"></i>Set Origin</div>
-      <div id=add_destination class="menu-item"><i class="glyphicon glyphicon-file"></i>Set Destination</div>
-  </div>
     <div>
       <button id="cake">
         test
@@ -57,13 +30,20 @@
       <button id="submit">
         Help
       </button>
-      <p id="latlng">
-        57.013375837480126, 9.966869355955836
-      </p>
     </div>
     <div id="right-panel">
-      <p>Total Distance: <span id="total"></span></p>
+      <div>
+        <p>Start address</p>
+        <input type="text" id="start_address"></div>
+        <p>End address</p>
+        <input type="text" id="end_address"></div>
+      </div>
     </div>
+
+    <script>
+      document.getElementById("start_address").value="aalborg";
+      document.getElementById("end_address").value="gedser";
+    </script>
     
   </body>
 </html>
