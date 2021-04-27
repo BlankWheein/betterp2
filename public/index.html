@@ -4,7 +4,7 @@
     <title>69 420 1337</title>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <script
-      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM&callback=initMap&libraries=&v=weekly"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM&callback=initMap&libraries=places&v=weekly"
       defer
     ></script>
     <link rel="stylesheet" type="text/css" href="./style.css" />
@@ -31,19 +31,29 @@
         Help
       </button>
     </div>
-    <div id="right-panel">
+      
       <div>
-        <p>Start address</p>
-        <input type="text" id="start_address"></div>
-        <p>End address</p>
-        <input type="text" id="end_address"></div>
-      </div>
-    </div>
+        <div id="pac-container">
+          <p>Start Address</p>
+          <input id="pac-input" type="text" placeholder="Enter a location" />
+        </div>
+        <div id="infowindow-content">
+          <img src="" width="16" height="16" id="place-icon" />
+          <span id="place-name" class="title"></span><br />
+          <span id="place-address"></span>
+        </div>
+      <p id="details"></p></div>
 
-    <script>
-      document.getElementById("start_address").value="aalborg";
-      document.getElementById("end_address").value="gedser";
-    </script>
+      <div id="pac-container2">
+        <p>End Address</p>
+        <input id="pac-input2" type="text" placeholder="Enter a location" />
+      </div>
+      <div id="infowindow-content2">
+        <img src="" width="16" height="16" id="place-icon2" />
+        <span id="place-name2" class="title"></span><br />
+        <span id="place-address2"></span>
+      </div>
+    <p id="details2"></p></div>
     
   </body>
 </html>

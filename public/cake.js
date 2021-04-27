@@ -15,13 +15,117 @@ function initMap() {
   localStorage.setItem("waypoints", JSON.stringify(waypoints));
   const map = new google.maps.Map(document.getElementById("map"), {
     zoom: 1,
-    center: { lat: 57.0488195, lng: 9.921747 },
+    maxZoom: 1, 
+    minZoom: 1,
     restriction: {
       latLngBounds: AALBORG_BOUNDS,
       strictBounds: false,
     },
   });
+  const input = document.getElementById("pac-input");
+  const options = {
+    fields: ["address_component", "geometry"],
+    componentRestrictions: { country: "dk" },
+    strictBounds: false,
+  };
+  const autocomplete = new google.maps.places.Autocomplete(input, options);
+  autocomplete.setFields(["geometry", "address_components"]);
   const infowindow = new google.maps.InfoWindow();
+  const infowindowContent = document.getElementById("infowindow-content");
+  infowindow.setContent(infowindowContent);
+  autocomplete.addListener("place_changed", () => {
+    infowindow.close();
+    const place = autocomplete.getPlace();
+
+    if (!place.geometry || !place.geometry.location) {
+      // User entered the name of a Place that was not suggested and
+      // pressed the Enter key, or the Place Details request failed.
+      window.alert("No details available for input: '" + place.name + "'");
+      return;
+    }
+
+    // If the place has a geometry, then present it on a map.
+    let address = "";
+
+    if (place.address_components) {
+      address = [
+        (place.address_components[0] &&
+          place.address_components[0].short_name) ||
+          "",
+        (place.address_components[1] &&
+          place.address_components[1].short_name) ||
+          "",
+        (place.address_components[2] &&
+          place.address_components[2].short_name) ||
+          "",
+      ].join(" ");
+    }
+    infowindowContent.children["place-icon"].src = place.icon;
+    infowindowContent.children["place-name"].textContent = place.name;
+    infowindowContent.children["place-address"].textContent = address;
+    localStorage.setItem("start_address", JSON.stringify(`${place.geometry.location.lat()}, ${place.geometry.location.lng()}`));
+    displayRoute(
+      `${place.geometry.location.lat()}, ${place.geometry.location.lng()}`,
+      waypoints.destination,
+      directionsService,
+      directionsRenderer
+    );
+
+  });
+
+
+
+
+
+
+  const input2 = document.getElementById("pac-input2");
+  const autocomplete2 = new google.maps.places.Autocomplete(input2, options);
+  autocomplete2.setFields(["geometry", "address_components"]);
+  const infowindow2 = new google.maps.InfoWindow();
+  const infowindowContent2 = document.getElementById("infowindow-content2");
+  infowindow2.setContent(infowindowContent);
+  autocomplete2.addListener("place_changed", () => {
+    infowindow2.close();
+    const place2 = autocomplete2.getPlace();
+
+    if (!place2.geometry || !place2.geometry.location) {
+      // User entered the name of a Place that was not suggested and
+      // pressed the Enter key, or the Place Details request failed.
+      window.alert("No details available for input: '" + place2.name + "'");
+      return;
+    }
+
+    // If the place has a geometry, then present it on a map.
+    let address = "";
+
+    if (place2.address_components) {
+      address = [
+        (place2.address_components[0] &&
+          place2.address_components[0].short_name) ||
+          "",
+        (place2.address_components[1] &&
+          place2.address_components[1].short_name) ||
+          "",
+        (place2.address_components[2] &&
+          place2.address_components[2].short_name) ||
+          "",
+      ].join(" ");
+    }
+
+    infowindowContent2.children["place-icon2"].src = place2.icon;
+    infowindowContent2.children["place-name2"].textContent = place2.name;
+    infowindowContent2.children["place-address2"].textContent = address;
+    localStorage.setItem("end_address", JSON.stringify(`${place2.geometry.location.lat()}, ${place2.geometry.location.lng()}`));
+    displayRoute(
+      waypoints.origin,
+      `${place2.geometry.location.lat()}, ${place2.geometry.location.lng()}`,
+      directionsService,
+      directionsRenderer
+    );
+  });
+
+
+
   document.getElementById("submit").addEventListener("click", () => {
     if (localStorage.getItem("submitEnabled") == "false") {return;} else {
     alert("Fuck You Markus");
@@ -73,8 +177,8 @@ window.addEventListener("click", function() {
 
 document.getElementById("cake").onclick = () => {
   let body = JSON.stringify({
-    start: document.getElementById("start_address").value,
-    end: document.getElementById("end_address").value
+    start: localStorage.getItem("start_address"),
+    end: localStorage.getItem("end_address")
   });
   fetch("/getaddress", {
     method: "POST",
@@ -82,10 +186,27 @@ document.getElementById("cake").onclick = () => {
       'Content-Type': 'application/json',
       },
     body: body
-  }).then(data => data.json()).then(data_ => console.log(data_)).catch();
+  }).then(data => data.json()).then(data => {
+    let origin = `${data.DATA[0].geometry.location.lat}, ${data.DATA[0].geometry.location.lng}`;
+    let destination = `${data.DATA[1].geometry.location.lat}, ${data.DATA[1].geometry.location.lng}`; 
+
+    waypoints = JSON.parse(localStorage.getItem("waypoints"));
+    waypoints.origin = origin;
+    waypoints.destination = destination;
+    localStorage.setItem("waypoints", JSON.stringify(waypoints));
+    displayRoute(
+      waypoints.origin,
+      waypoints.destination,
+      directionsService,
+      directionsRenderer
+    );
+  }).catch();
 
 }
-} 
+}
+
+
+
 
 function displayRoute(origin, destination, service, display) {
   waypoints = JSON.parse(localStorage.getItem("waypoints"));
@@ -142,12 +263,6 @@ function fetchRetry(url, body, error) {
 }
 
 function computeTotalDistance(result) {
-  let total = 0;
-  const myroute = result.routes[0];
-
-  for (let i = 0; i < myroute.legs.length; i++) {
-    total += myroute.legs[i].distance.value;
-  }
   var polyline = new google.maps.Polyline({
     path: [],
     strokeColor: '#FF0000',
