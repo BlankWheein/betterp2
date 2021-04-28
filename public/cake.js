@@ -123,7 +123,124 @@ function initMap() {
       directionsRenderer
     );
   });
+  const input3 = document.getElementById("pac-input3");
+  const autocomplete3 = new google.maps.places.Autocomplete(input3, options);
+  autocomplete3.setFields(["geometry", "address_components"]);
+  const infowindow3 = new google.maps.InfoWindow();
+  const infowindowContent3 = document.getElementById("infowindow-content3");
+  infowindow3.setContent(infowindowContent);
+  autocomplete3.addListener("place_changed", () => {
+    infowindow3.close();
+    const place3 = autocomplete3.getPlace();
 
+    if (!place3.geometry || !place3.geometry.location) {
+      // User entered the name of a Place that was not suggested and
+      // pressed the Enter key, or the Place Details request failed.
+      window.alert("No details available for input: '" + place3.name + "'");
+      return;
+    }
+
+    // If the place has a geometry, then present it on a map.
+    let address = "";
+
+    if (place3.address_components) {
+      address = [
+        (place3.address_components[0] &&
+          place3.address_components[0].short_name) ||
+          "",
+        (place3.address_components[1] &&
+          place3.address_components[1].short_name) ||
+          "",
+        (place3.address_components[2] &&
+          place3.address_components[2].short_name) ||
+          "",
+      ].join(" ");
+    }
+
+    infowindowContent3.children["place-icon3"].src = place3.icon;
+    infowindowContent3.children["place-name3"].textContent = place3;
+    infowindowContent3.children["place-address3"].textContent = address;
+    document.getElementById("pac-input3").value = "";
+    let middles = JSON.parse(localStorage.getItem("middle_address"));
+    if (middles == null || middles == undefined) {
+      middles = [];
+    }
+    address2 = `${place3.geometry.location.lat()}, ${place3.geometry.location.lng()}`;
+    let in_element = false;
+    middles.forEach(element => {
+      if (element == address2) {
+        in_element = true;
+      }
+    })
+    if (!in_element) {
+      middles.push({location: address2});
+      waypoints = JSON.parse(localStorage.getItem("waypoints"));
+      waypoints.waypoint = middles;
+      localStorage.setItem("middle_address", JSON.stringify(middles));
+      var node = document.createElement(`array${middles.length}`);
+      node.id = `array${address2.replace(",", "")}`;
+      var textnode = document.createTextNode(`${address} `);
+      var button = document.createElement(`button`);
+      button.id = `button${address2.replace(",", "")}`;
+      localStorage.setItem("waypoints", JSON.stringify(waypoints));
+      button.textContent = "Remove";
+      var br = document.createElement("br");
+      node.appendChild(textnode);
+      node.appendChild(button);
+      node.appendChild(br); 
+      document.getElementById("listofw").appendChild(node);
+    }
+    
+    displayRoute(
+      waypoints.origin,
+      waypoints.destination,
+      directionsService,
+      directionsRenderer
+    );
+    button = document.getElementById(`button${address2.replace(",", "")}`);
+    button.onclick = () => {
+      var node = document.getElementById(button.id.replace("button", "array"));
+      address2 = button.id.replace("button", "");
+      console.log(address2);
+      waypoints = JSON.parse(localStorage.getItem("waypoints"));
+      middles = JSON.parse(localStorage.getItem("middle_address"));
+      node.remove();
+      for (var i = 0; i < waypoints.waypoint.length; i++) {
+        if (waypoints.waypoint[i].location.replace(",","") == address2) {
+          waypoints.waypoint.splice(i, 1);
+          break;
+        }
+
+      }
+      for (var i = 0; i < middles.length; i++) {
+        if (middles[i].location.replace(",","") == address2) {
+          middles.splice(i, 1);
+          break;
+        }
+
+      }
+      localStorage.setItem("middle_address", JSON.stringify(middles));
+      localStorage.setItem("waypoints", JSON.stringify(waypoints));
+      displayRoute(waypoints.origin, waypoints.destination, directionsService, directionsRenderer);
+      }
+  });
+
+
+
+
+  function makeid(length) {
+    var result           = [];
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+      result.push(characters.charAt(Math.floor(Math.random() * 
+ charactersLength)));
+   }
+   return result.join('');
+}
+
+
+  
 
 
   document.getElementById("submit").addEventListener("click", () => {
@@ -145,7 +262,7 @@ function initMap() {
   });
   const directionsService = new google.maps.DirectionsService();
   const directionsRenderer = new google.maps.DirectionsRenderer({
-    draggable: true,
+    draggable: false,
     map,
     panel: undefined,
   });
