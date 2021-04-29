@@ -53,7 +53,24 @@ function fetchRetry(url, body, error) {
   })
 }
 
-function computeTotalDistance(result, poly, tunnel) {
+function checkpoint(route, objects) {
+  objects.forEach(o => {
+    let on_route = false;
+    route.forEach(e => {
+      var point = new google.maps.LatLng(e.lat(), e.lng() );
+     if (google.maps.geometry.poly.containsLocation(point, o)) {
+       on_route = true;
+       return;
+     }
+    })
+    if (on_route) {
+      console.log("On Route");
+      console.log(o);
+    }
+  })
+}
+
+function computeTotalDistance(result, objects) {
   var polyline = new google.maps.Polyline({
     path: [],
     strokeColor: '#FF0000',
@@ -71,13 +88,5 @@ function computeTotalDistance(result, poly, tunnel) {
       }
     }
   }
-  var test = {
-    arr: []
-  }
-  result.routes[0].overview_path.forEach(element => {
-    test.arr.push({lat: element.lat(),
-                   lng: element.lng()});
-    var point = new google.maps.LatLng(element.lat(), element.lng() );
-    console.log(google.maps.geometry.poly.containsLocation(point, poly));
-  });
+  checkpoint(result.routes[0].overview_path, objects)
 }
