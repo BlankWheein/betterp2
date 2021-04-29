@@ -1,4 +1,62 @@
 function initMap() {
+
+
+  google.maps.Polygon.prototype.Contains = function (point) {
+    var crossings = 0,
+        path = this.getPath();
+
+    // for each edge
+    for (var i = 0; i < path.getLength(); i++) {
+        var a = path.getAt(i),
+            j = i + 1;
+        if (j >= path.getLength()) {
+            j = 0;
+        }
+        var b = path.getAt(j);
+        if (rayCrossesSegment(point, a, b)) {
+            crossings++;
+        }
+    }
+
+    // odd number of crossings?
+    return (crossings % 2 == 1);
+
+    function rayCrossesSegment(point, a, b) {
+        var px = point.lng(),
+            py = point.lat(),
+            ax = a.lng(),
+            ay = a.lat(),
+            bx = b.lng(),
+            by = b.lat();
+        if (ay > by) {
+            ax = b.lng();
+            ay = b.lat();
+            bx = a.lng();
+            by = a.lat();
+        }
+        // alter longitude to cater for 180 degree crossings
+        if (px < 0) {
+            px += 360;
+        }
+        if (ax < 0) {
+            ax += 360;
+        }
+        if (bx < 0) {
+            bx += 360;
+        }
+
+        if (py == ay || py == by) py += 0.00000001;
+        if ((py > by || py < ay) || (px > Math.max(ax, bx))) return false;
+        if (px < Math.min(ax, bx)) return true;
+
+        var red = (ax != bx) ? ((by - ay) / (bx - ax)) : Infinity;
+        var blue = (ax != px) ? ((py - ay) / (px - ax)) : Infinity;
+        return (blue >= red);
+
+    }
+
+};
+
   let menuDisplayed = false;
   let menuBox;
   waypoints = {
@@ -14,13 +72,9 @@ function initMap() {
   };
   localStorage.setItem("waypoints", JSON.stringify(waypoints));
   const map = new google.maps.Map(document.getElementById("map"), {
-    zoom: 1,
-    maxZoom: 1, 
-    minZoom: 1,
-    restriction: {
-      latLngBounds: AALBORG_BOUNDS,
-      strictBounds: false,
-    },
+    zoom: 15,
+    //maxZoom: 15, 
+    //minZoom: 15,
   });
   const input = document.getElementById("pac-input");
   const options = {
@@ -225,24 +279,6 @@ function initMap() {
       }
   });
 
-
-
-
-  function makeid(length) {
-    var result           = [];
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-      result.push(characters.charAt(Math.floor(Math.random() * 
- charactersLength)));
-   }
-   return result.join('');
-}
-
-
-  
-
-
   document.getElementById("submit").addEventListener("click", () => {
     if (localStorage.getItem("submitEnabled") == "false") {return;} else {
     alert("Fuck You Markus");
@@ -268,7 +304,7 @@ function initMap() {
   });
   directionsRenderer.addListener("directions_changed", () => {
     console.log(map);
-    computeTotalDistance(directionsRenderer.getDirections());
+    computeTotalDistance(directionsRenderer.getDirections(), poly, tunnel);
     var test = {
       arr: []
     }
@@ -292,38 +328,39 @@ window.addEventListener("click", function() {
     }
 }, true);
 
+polyarray = [];
+const poly = new google.maps.Polygon({
+  path: [{lat:57.05272529190218, lng:9.917737176668847},{lat:57.05306372385469, lng:9.91805635954162},{lat:57.05367561776083, lng:9.918718205955694},{lat:57.05426836837738, lng:9.919378057667764},{lat:57.05497387331946, lng:9.920146049659246},{lat:57.0556299277329, lng:9.920869682025995},{lat:57.056316531824514, lng:9.921638492076896},{lat:57.05706403241996, lng:9.922431227192247},{lat:57.05709466289421, lng:9.922326621040666},{lat:57.0558358074135, lng:9.920956413417903},{lat:57.05492524059234, lng:9.919964157210103},{lat:57.053941462138795, lng:9.918878477577667},{lat:57.05323843425168, lng:9.918116804227157},{lat:57.05299336429895, lng:9.917867358788772},{lat:57.05276725665803, lng:9.917639371022506},],
+  geodesic: false,
+  strokeColor: "#ffcc33",
+  strokeOpacity: 1.0,
+  strokeWeight: 2,
+});
+const tunnel = new google.maps.Polygon({
+  path: [{lat:57.0534562160397, lng:9.964558263488325},{lat:57.05436645636499, lng:9.962648530669721},{lat:57.05558591003367, lng:9.960309644408735},{lat:57.05661862177167, lng:9.958314080901655},{lat:57.057779658859445, lng:9.956082483001264},{lat:57.05802469722276, lng:9.955567498870405},{lat:57.057913846734934, lng:9.955331464477094},{lat:57.056421038560934, lng:9.958161943770762},{lat:57.05516076960027, lng:9.960597389556284},{lat:57.05444309732675, lng:9.96194922289979},{lat:57.05426228734889, lng:9.962400229337906},{lat:57.053958189182566, lng:9.962887458218788},{lat:57.05371895888467, lng:9.963354162587379},{lat:57.05326383357485, lng:9.964121274365638},],
+  geodesic: true,
+  strokeColor: "#ffcc33",
+  strokeOpacity: 1.0,
+  strokeWeight: 2,
+})
+poly.setMap(map);
+tunnel.setMap(map);
 document.getElementById("cake").onclick = () => {
-  let body = JSON.stringify({
-    start: localStorage.getItem("start_address"),
-    end: localStorage.getItem("end_address")
-  });
-  fetch("/getaddress", {
-    method: "POST",
-    headers: {
-      'Content-Type': 'application/json',
-      },
-    body: body
-  }).then(data => data.json()).then(data => {
-    let origin = `${data.DATA[0].geometry.location.lat}, ${data.DATA[0].geometry.location.lng}`;
-    let destination = `${data.DATA[1].geometry.location.lat}, ${data.DATA[1].geometry.location.lng}`; 
-
-    waypoints = JSON.parse(localStorage.getItem("waypoints"));
-    waypoints.origin = origin;
-    waypoints.destination = destination;
-    localStorage.setItem("waypoints", JSON.stringify(waypoints));
-    displayRoute(
-      waypoints.origin,
-      waypoints.destination,
-      directionsService,
-      directionsRenderer
-    );
-  }).catch();
-
+  console.log(tunnel);
+  console.log(polyarray);
+  let message = "[";
+  polyarray.forEach(e => {
+    message += `{lat:${e.lat}, lng:${e.lng}},`;
+  })
+  message += "]";
+  console.log(message);
 }
-}
-
-
-
+map.addListener("click", addLatLng);
+function addLatLng(event) {
+  const path = tunnel.getPath();
+  path.push(event.latLng);
+  polyarray.push({lat: event.latLng.lat(), lng: event.latLng.lng()});
+}}
 
 function displayRoute(origin, destination, service, display) {
   waypoints = JSON.parse(localStorage.getItem("waypoints"));
@@ -345,6 +382,7 @@ function displayRoute(origin, destination, service, display) {
     (result, status) => {
       if (status === "OK") {
         display.setDirections(result);
+        console.log(result);
       } else {
         alert("Could not display directions due to: " + status);
       }
@@ -379,7 +417,7 @@ function fetchRetry(url, body, error) {
   })
 }
 
-function computeTotalDistance(result) {
+function computeTotalDistance(result, poly, tunnel) {
   var polyline = new google.maps.Polyline({
     path: [],
     strokeColor: '#FF0000',
@@ -403,5 +441,7 @@ function computeTotalDistance(result) {
   result.routes[0].overview_path.forEach(element => {
     test.arr.push({lat: element.lat(),
                    lng: element.lng()});
+    var point = new google.maps.LatLng(element.lat(), element.lng() );
+    console.log(google.maps.geometry.poly.containsLocation(point, poly));
   });
 }
