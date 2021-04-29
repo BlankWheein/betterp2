@@ -14,7 +14,6 @@ function init(directionsService, directionsRenderer) {
 
 function auto1(directionsService, directionsRenderer, options) {
     const input = document.getElementById("pac-input");
-
     const autocomplete = new google.maps.places.Autocomplete(input, options);
     autocomplete.setFields(["geometry", "address_components"]);
     const infowindow = new google.maps.InfoWindow();
@@ -25,15 +24,10 @@ function auto1(directionsService, directionsRenderer, options) {
       const place = autocomplete.getPlace();
   
       if (!place.geometry || !place.geometry.location) {
-        // User entered the name of a Place that was not suggested and
-        // pressed the Enter key, or the Place Details request failed.
         window.alert("No details available for input: '" + place.name + "'");
         return;
       }
-  
-      // If the place has a geometry, then present it on a map.
       let address = "";
-  
       if (place.address_components) {
         address = [
           (place.address_components[0] &&
