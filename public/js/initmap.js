@@ -9,6 +9,7 @@ function initMap() {
     localStorage.setItem("waypoints", JSON.stringify(waypoints));
     const map = new google.maps.Map(document.getElementById("map"), {
       zoom: 15,
+      disableDefaultUI: true,
     });
     
   
