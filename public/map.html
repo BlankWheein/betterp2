@@ -2,16 +2,27 @@
 <html>
   <head>
     <title>69 420 1337</title>
+    <link rel="stylesheet" type="text/css" href="navbar.css" />
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
     <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM&callback=initMap&libraries=places&v=weekly"
       defer
     ></script>
     <link rel="stylesheet" type="text/css" href="./style.css" />
-    <script src="./cake.js"></script>
+    <script src="./RouteInput.js"></script>
   </head>
   <body>
-    <a href="/">Home</a>
+    <div class="vertical-menu">
+      <!-- Link one -->
+      <a href="/">Home</a>
+
+      <!-- Link Two -->
+      <a href="TruckInput.html">Input Truck and classification data</a>
+
+      <!-- Link Three -->
+      <a href="map.html" class="active">Map</a>
+  </div>
+
     <script>
       window.onload = () => { 
         localStorage.setItem("submitEnabled", true);

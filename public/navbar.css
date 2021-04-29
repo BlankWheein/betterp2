@@ -1,0 +1,32 @@
+body{
+    margin: 0;
+}
+.vertical-menu {
+    width: 100vw;
+    background-color: #eee;
+    position:static;
+   
+}
+
+.vertical-menu a{
+    display: inline-block;
+    color: black;
+    padding: 2vw;
+    text-decoration: none;
+    text-align: center;
+}
+
+.vertical-menu a:hover{
+    background-color: white;
+}
+
+/*uncomment this and the css below, and insert styling for the current page you're on 
+
+.vertical-menu a.active{
+   
+}
+
+*/
+
+
+
