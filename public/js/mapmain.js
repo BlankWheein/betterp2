@@ -54,6 +54,7 @@ function fetchRetry(url, body, error) {
 }
 
 function checkpoint(route, objects) {
+  let events = [];
   objects.forEach(o => {
     let on_route = false;
     route.forEach(e => {
@@ -64,10 +65,12 @@ function checkpoint(route, objects) {
      }
     })
     if (on_route) {
-      console.log("On Route");
       console.log(o);
+      events.push(o.data);
     }
   })
+  console.log("Data");
+  console.log(events);
 }
 
 function computeTotalDistance(result, objects) {
