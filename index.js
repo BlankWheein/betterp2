@@ -18,6 +18,9 @@ app.listen(port, "0.0.0.0", () => console.log(`Listening at ${port}`))
 app.use(express.static(__dirname + '/public'));
 app.use(express.json({ limit: "5mb" }));
 
+app.get("/", (req, res) => {
+    res.redirect("./html/index.html")
+})
 
 app.post("/api/get/route", (req, res) => {
     let body = req.body;
