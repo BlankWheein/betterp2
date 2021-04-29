@@ -2,16 +2,15 @@
     margin: 0;
 }
 .vertical-menu {
-    width: 100vw;
+    width: 60%;
     background-color: #eee;
     position:fixed;
-   
 }
 
 .vertical-menu a{
     display: inline-block;
     color: black;
-    padding: 2vw;
+    padding: 1.2vw;
     text-decoration: none;
     text-align: center;
 }
