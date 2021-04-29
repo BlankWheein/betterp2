@@ -1,10 +1,10 @@
-body{
+    body{
     margin: 0;
 }
 .vertical-menu {
     width: 100vw;
     background-color: #eee;
-    position:static;
+    position:fixed;
    
 }
 
