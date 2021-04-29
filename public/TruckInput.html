@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classification and Truck Data Input</title>
+    <script src="./TruckInput.js"></script>
+
+</head>
+<body>
+    <nav>
+        <a href="/">Home</a>
+    </nav>
+
+    <h1>Indtast klasse og lastbil-oplysninger</h1>
+    
+    <input type="number" min="0" id="roadClassification" placeholder="Vej-klasse"/>
+    <input type="number" min="0" id="bridgeClassification" placeholder="Bro-klasse"/>
+    <input type="number" min="0" id="height" placeholder="Højde"/>
+    <input type="number" min="0" id="width" placeholder="Bredde"/>
+    <input type="number" min="0" id="length" placeholder="Længde"/>  
+    <script>window.onload=()=> {start();}</script>
+    <button type="button" id="save_input">Gem dine lastbil-oplysninger</button>
+        
+</body>
+
+
+</html>
