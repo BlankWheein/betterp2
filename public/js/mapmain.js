@@ -66,10 +66,13 @@ function checkpoint(route, objects) {
     if (on_route) {
       console.log(o);
       events.push(o.data);
+    } else {
+      console.log("NAN");
+      events.push({class: null, name: null})
     }
   })
-  console.log("Data");
-  console.log(events);
+  localStorage.setItem("place_events", JSON.stringify(events));
+  console.log({events: events});
 }
 
 function computeTotalDistance(result, objects) {

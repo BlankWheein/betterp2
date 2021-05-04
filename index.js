@@ -7,6 +7,7 @@ const fs = require('fs');
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+var routes = [];
 var request = require("request");
 const API_KEY = "AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM";
 
@@ -20,5 +21,29 @@ app.use(express.json({ limit: "5mb" }));
 
 app.get("/", (req, res) => {
     res.redirect("./html/index.html")
+})
+
+function my_func(data) {
+    let message = "OK";
+    let status = 200;
+    data.events.forEach(e => {
+        if (e.class < data.truck.class) {
+            status = 203;
+            message = "Class Exeeced"
+            return
+        }
+    });
+
+    return [status, message, data];
+}
+
+app.post("/checkroute", (req, res) => {
+    let body = req.body;
+    let data = my_func(body);
+    console.log(data);
+    if (data[0] === 200) {
+        routes.push({status: data[0], message:data[1], data});
+    }
+    res.json({status: data[0], message: data[1], data:data[2]})
 })
 
