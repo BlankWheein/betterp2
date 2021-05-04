@@ -18,3 +18,7 @@
 .vertical-menu a:hover{
     background-color: white;
 }
+
+.input {
+    padding-left: 1vw;
+}
