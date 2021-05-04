@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classification and Truck Data Input</title>
+    <link rel="stylesheet" type="text/css" href="../css/navbar.css" />
+
+    <script src="../js/TruckInput.js"></script>
+
+</head>
+<body>
+    <div class="vertical-menu">
+        <!-- Link one -->
+        <a href="/">Home</a>
+
+        <!-- Link Two -->
+        <a href="TruckInput.html" class="active">Input Truck and classification data</a>
+
+        <!-- Link Three -->
+        <a href="map.html">Map</a>
+    </div>
+
+    <h1>Indtast klasse og lastbil-oplysninger</h1>
+     
+    
+    
+    
+    <div class="input">
+        <p>Vej-klasse:</p>
+        <input type="number" min="0" id="roadClassification" placeholder="Vej-klasse"/> 
+    </div>
+    <div class="input">
+        <p>Bro-klasse:</p>
+        <input type="number" min="0" id="bridgeClassification" placeholder="Bro-klasse"/>
+    </div>
+    <div class="input">
+        <p>Højde:</p>
+        <input type="number" min="0" id="height" placeholder="Højde"/>
+    </div>
+    <div class="input">
+        <p>Bredde:</p>
+        <input type="number" min="0" id="width" placeholder="Bredde"/>
+    </div>
+    <div class="input">
+        <p>Længde:</p>
+        <input type="number" min="0" id="length" placeholder="Længde"/>
+    </div>
+    <br>
+    <script>window.onload=()=> {start();}</script>
+    <button type="button" id="save_input" class="input">Gem dine lastbil-oplysninger</button>
+        
+</body>
+
+
+</html>

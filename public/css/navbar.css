@@ -1,0 +1,24 @@
+    body{
+    margin: 0;
+}
+.vertical-menu {
+    width: 60%;
+    background-color: #eee;
+    position:fixed;
+}
+
+.vertical-menu a{
+    display: inline-block;
+    color: black;
+    padding: 1vw;
+    text-decoration: none;
+    text-align: center;
+}
+
+.vertical-menu a:hover{
+    background-color: white;
+}
+
+.input {
+    padding-left: 1vw;
+}
