@@ -14,20 +14,25 @@ function initMap() {
     
   
     document.getElementById("submit").addEventListener("click", () => {
-      if (localStorage.getItem("submitEnabled") == "false") {return;} else {
-      localStorage.setItem("submitEnabled", "false");
-      var test = {
-        arr: []
+      let body = {
+        route: directionsRenderer.getDirections().routes[0].overview_path,
+        route_raw: directionsRenderer.getDirections(),
+        events: JSON.parse(localStorage.getItem("place_events")),
+        truck: {
+          class: JSON.parse(localStorage.getItem("BridgeClassification"))
+        }
       }
-      directionsRenderer.getDirections().routes[0].overview_path.forEach(element => {
-        test.arr.push({lat: element.lat(),
-                       lng: element.lng()});
-      });
-      console.log(test);
-      
-      
-    }
+      console.log(body);  
+      fetch("/checkroute", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+          },
+        body: JSON.stringify(body)
+      }).then(data => data.json()).then(data => {
+        console.log(data);
     });
+  });
     const directionsService = new google.maps.DirectionsService();
     const directionsRenderer = new google.maps.DirectionsRenderer({
       draggable: false,
