@@ -22,3 +22,8 @@
 .input {
     padding-left: 1vw;
 }
+
+.span_table {
+    border: 1px solid black;
+    padding-left: 1vw;
+}
