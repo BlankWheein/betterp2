@@ -6,7 +6,7 @@ function displayRoute(origin, destination, service, display) {
   waypoints.destination = destination;
   localStorage.setItem("waypoints", JSON.stringify(waypoints));
   service.route(
-    {
+    { 
       origin: origin,
       destination: destination,
       waypoints: waypoints.waypoint,
