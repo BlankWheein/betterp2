@@ -69,6 +69,7 @@ function initMap() {
       objects[objects.length - 1].setMap(map);
     }
   })
+  console.log(objects);
   
   document.getElementById("cake").onclick = () => {
     let message = "[";
@@ -87,10 +88,10 @@ function initMap() {
 
   function createPolygon(data) {
 
-    if (data.name === undefined) {data.name = null;}
-    if (data.path === undefined) {data.path = null;}
-    if (data.class === undefined) {data.class = null;}
-    if (data.type === undefined) {data.type = null;}
+    if (data.name === undefined) {data.name = "Not Specified";}
+    if (data.path === undefined) {data.path = [];}
+    if (data.class === undefined) {data.class = 0;}
+    if (data.type === undefined) {data.type = "Not defined";}
     if (data.color === undefined) {data.color = "#ffcc33";}
     if (data.geodesic === undefined) {data.geodesic = false;}
     if (data.strokeWeight === undefined) {data.strokeWeight = 2;}
@@ -109,7 +110,6 @@ function initMap() {
             type: data.type,
             spand: data.spand,
             raw: data,
-
         }
       })
       return polygon;
