@@ -24,6 +24,22 @@
 }
 
 .span_table {
-    border: 1px solid black;
+    border: 2px solid black;
+    margin-left: 1vw;
     padding-left: 1vw;
+    padding: 8px;
+    border-collapse: collapse;
+}
+.span_table, th{
+    
+    border: 1.5px solid black;
+}
+
+.span_row{
+    text-align: center;
+    border: 1px solid black;
+}
+
+.maxclass_row{
+    text-align: center;
 }
