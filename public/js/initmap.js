@@ -1,3 +1,4 @@
+
 function initMap() {
     let menuDisplayed = false;
     let menuBox;
@@ -20,7 +21,8 @@ function initMap() {
         events: JSON.parse(localStorage.getItem("place_events")),
         truck: {
           class: JSON.parse(localStorage.getItem("BridgeClassification"))
-        }
+        },
+        uuid: localStorage.getItem("uuid")
       }
       fetch("/checkroute", {
         method: "POST",
@@ -69,6 +71,23 @@ function initMap() {
       objects[objects.length - 1].setMap(map);
     }
   })
+
+  if (localStorage.getItem("uuid") === null) {
+    fetch("/get/uuid").then(data => data.json()).then(data => {
+      localStorage.setItem("uuid", data.data);
+    });
+  } else {
+    console.log(localStorage.getItem("uuid"))
+  }
+
+  FetchRetry(`/get/approved/${localStorage.getItem("uuid")}`, 5000, 9999, {})
+  .then(data => {
+    console.log("data");
+    console.log(data);
+  })
+
+  
+
   console.log(objects);
   
   document.getElementById("cake").onclick = () => {
@@ -130,3 +149,25 @@ function initMap() {
       })
       return polygon;
   }
+
+
+function wait(delay){
+    return new Promise((resolve) => setTimeout(resolve, delay));
+}
+
+function FetchRetry(url, delay, tries, fetchOptions = {}) {
+    function onError(err){
+        triesLeft = tries - 1;
+        console.log(`trying again ${triesLeft}`)
+        if(!triesLeft){
+            throw err;
+        }
+        return wait(delay).then(() => FetchRetry(url, delay, triesLeft, fetchOptions));
+    }
+    return fetch(url,fetchOptions).then(data => data.json()).then(data => {
+      if (data.status == 1) {
+        console.log(data);
+        throw new Error("Status was not Approved");
+      }
+    }).catch(onError);
+}
