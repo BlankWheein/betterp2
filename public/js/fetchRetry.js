@@ -11,7 +11,7 @@ function FetchRetry(url, delay, tries, fetchOptions = {}, callback) {
         }
         return wait(delay).then(() => FetchRetry(url, delay, triesLeft, fetchOptions, callback));
     }
-    return fetch(url,fetchOptions).then(data => data.json()).then(data => {
+    return fetch(url, fetchOptions).then(data => data.json()).then(data => {
       if (data.status == 1) {
         console.log(data);
         throw new Error("Route is still under review");

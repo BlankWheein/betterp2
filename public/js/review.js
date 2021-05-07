@@ -93,15 +93,24 @@ function approve() {
     let data = JSON.parse(localStorage.getItem("selected_data"));
     FetchRetry(`/approve/${data.uuid}`, 2500, 10, {}, (data) => {
         console.log(data);
+        alert(`application was approved with status ${data.status}`);
+        location.reload();
+
     })
 }
 
 function reject() {
     console.log("clicked")
-    let reason = document.getElementById("reason");
+    let reason = document.getElementById("reason").value;
     let data = JSON.parse(localStorage.getItem("selected_data"));
-    FetchRetry(`/reject/${data.uuid}`, 2500, 10, {}, (data) => {
+    console.log(reason)
+    if (reason == null || undefined || reason == "") {
+      reason = "Unspecified"
+    }
+    FetchRetry(`/reject/${data.uuid}/${reason}`, 2500, 10, {}, (data) => {
         console.log(data);
+        alert(`application was rejected with status ${data.status}`);
+        location.reload();
     })
 }
 

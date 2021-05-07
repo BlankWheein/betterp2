@@ -211,14 +211,14 @@ app.get("/approve/:uuid", (req, res) => {
 })
 
 
-app.get("/reject/:uuid", (req, res) => {
+app.get("/reject/:uuid/:reason", (req, res) => {
     let uuid = req.params.uuid;
     routes.review.forEach(element => {
         if (element.uuid == uuid) {
             console.log(element);
             element.message = "Rejected";
             element.status = 201;
-            element.reason = "Unspecified";
+            element.reason = req.params.reason;
             routes.rejected.push(element);
             for (i = 0; i < routes.review.length; i++) {
                 if (routes.review[i].uuid == element.uuid) {
