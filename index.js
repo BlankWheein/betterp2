@@ -112,6 +112,7 @@ var routes = {
     lat: {},
     lng: {},
     review: [],
+    rejected: [],
 };
 var request = require("request");
 const API_KEY = "AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM";
@@ -131,7 +132,7 @@ app.get("/", (req, res) => {
 app.get("/get/uuid", (req, res) => {
     let secondsSinceEpoch = Math.round(Date.now() / 1000)
     let uuid = `${uuidv4()}-${secondsSinceEpoch}`;
-    res.json({data: uuid, status:200, message:"OK"});
+    res.json({uuid: uuid, status:200, message:"OK"});
 })
 
 app.get("/get/paths", (req, res) => {
@@ -143,13 +144,27 @@ app.get("/get/approved/:uuid", (req, res) => {
     let sent = false;
     routes.approved.forEach(e => {
         console.log(e);
-        if (e.data.uuid == req.params.uuid) {
+        if (e.uuid == req.params.uuid) {
             if (e.status == 200) {
-                res.json({e:e, uuid:req.params.uuid});
+                res.json({e: e, uuid: req.params.uuid, status:200});
                 sent = true;
+                return;
             }
         }
     })
+    if (!sent) {
+        routes.rejected.forEach(e => {
+            console.log(e);
+            if (e.uuid == req.params.uuid) {
+                if (e.status == 201) {
+                    res.json({e: e, uuid: req.params.uuid, status:201, reason: e.reason});
+                    sent = true;
+                    return;
+                }
+            }
+        })
+    }
+    
     if (!sent) {
         res.json({status: 1})
     }
@@ -171,8 +186,67 @@ app.get("/approve_routes", (req, res) => {
     res.json({status:200, message:"OK", routes:routes});
 })
 
-app.get("/print_routes", (req, res) => {
-    res.json({routes: routes});
+app.get("/approve/:uuid", (req, res) => {
+    let uuid = req.params.uuid;
+    routes.review.forEach(element => {
+        if (element.uuid == uuid) {
+            element.data.route.forEach(ele => {
+                routes.lat[ele.lat] = {lat: ele.lat,lng:ele.lng, class:element.data.truck.class}
+                routes.lng[ele.lng] = {lng: ele.lng,lat: ele.lat, class:element.data.truck.class}
+            })
+            element.message = "Approved";
+            element.status = 200;
+            routes.approved.push(element);
+            for (i = 0; i < routes.review.length; i++) {
+                if (routes.review[i].uuid == element.uuid) {
+                    routes.review.splice(i, 1);
+                    break;
+                } 
+            }
+            return;
+        }
+    })
+    
+    res.json({status: 200, message: "OK", routes:routes});
+})
+
+
+app.get("/reject/:uuid", (req, res) => {
+    let uuid = req.params.uuid;
+    routes.review.forEach(element => {
+        if (element.uuid == uuid) {
+            console.log(element);
+            element.message = "Rejected";
+            element.status = 201;
+            element.reason = "Unspecified";
+            routes.rejected.push(element);
+            for (i = 0; i < routes.review.length; i++) {
+                if (routes.review[i].uuid == element.uuid) {
+                    routes.review.splice(i, 1);
+                    break;
+                } 
+            }
+            return;
+        }
+    })
+    
+    res.json({status: 200, message: "OK", routes:routes});
+})
+
+app.get("/reject_routes", (req, res) => {
+    for (i = 0; i < routes.review.length; i++) {
+        let route = routes.review.pop();
+        console.log(route);
+        route.message = "Rejected";
+        route.status = 201;
+        route.reason = "Unspecified";
+        routes.rejected.push(route);
+    }
+    res.json({status:200, message:"OK", routes:routes});
+})
+
+app.get("/get/routes", (req, res) => {
+    res.json({routes: routes, status:200});
 })
 function diff(a, b) { return Math.abs(a - b); };
 function check_if_route_exists(data) {
@@ -234,10 +308,13 @@ function parse_data(data) {
 
 app.post("/checkroute", (req, res) => {
     let body = req.body;
+    let secondsSinceEpoch = Math.round(Date.now() / 1000)
+    let uuid = `${uuidv4()}-${secondsSinceEpoch}`;
     let data = checkroute(body);
+    data.uuid = uuid;
     if (data[0] === 201) {
-        routes.review.push({status: data[0], message:data[1], data:data[2]});
+        routes.review.push({status: data[0], message:data[1], data:data[2], uuid:uuid});
     }
-    res.json({status: data[0], message: data[1], data:data[2]})
+    res.json({status: data[0], message: data[1], data:data[2], uuid:uuid})
 })
 

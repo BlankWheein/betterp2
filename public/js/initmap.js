@@ -1,7 +1,5 @@
 
 function initMap() {
-    let menuDisplayed = false;
-    let menuBox;
     waypoints = {
       origin: localStorage.getItem("origin"),
       destination: localStorage.getItem("destination"),
@@ -22,7 +20,7 @@ function initMap() {
         truck: {
           class: JSON.parse(localStorage.getItem("BridgeClassification"))
         },
-        uuid: localStorage.getItem("uuid")
+        waypoints: JSON.parse(localStorage.getItem("waypoints"))
       }
       fetch("/checkroute", {
         method: "POST",
@@ -31,8 +29,12 @@ function initMap() {
           },
         body: JSON.stringify(body)
       }).then(data => data.json()).then(data => {
-        console.log(data);
+        let uuid = JSON.parse(localStorage.getItem("uuid"));
+        uuid.push(data.uuid)
+        localStorage.setItem("uuid", JSON.stringify(uuid));
+        FetchRetry(`/get/approved/${data.uuid}`, 10000, 9999, {}, uuidApproved)
     });
+    
   });
     const directionsService = new google.maps.DirectionsService();
     const directionsRenderer = new google.maps.DirectionsRenderer({
@@ -72,24 +74,16 @@ function initMap() {
     }
   })
 
-  if (localStorage.getItem("uuid") === null) {
-    fetch("/get/uuid").then(data => data.json()).then(data => {
-      localStorage.setItem("uuid", data.data);
-    });
-  } else {
-    console.log(localStorage.getItem("uuid"))
+  
+  let uuids = JSON.parse(localStorage.getItem("uuid"));
+  if (uuids !== []) {
+    for (i = 0; i<uuids.length; i++) {
+      console.log(uuids[i]);
+      FetchRetry(`/get/approved/${uuids[i]}`, 10000, 9999, {}, uuidApproved)
+    }
+    
   }
-
-  FetchRetry(`/get/approved/${localStorage.getItem("uuid")}`, 5000, 9999, {})
-  .then(data => {
-    console.log("data");
-    console.log(data);
-  })
-
-  
-
-  console.log(objects);
-  
+    
   document.getElementById("cake").onclick = () => {
     let message = "[";
     create.createpath.forEach(e => {
@@ -104,6 +98,20 @@ function initMap() {
     path.push(event.latLng);
     create.createpath.push({lat: event.latLng.lat(), lng: event.latLng.lng()});
   }}
+
+  function uuidApproved(data) {
+    console.log("data");
+    console.log(data);
+    let uuids = JSON.parse(localStorage.getItem("uuid"));
+    uuids.splice(uuids.indexOf(data.uuid), 1);
+    if (data.status == 200) {
+    alert(`Route ${data.uuid} was approved!`);
+    } else {
+    alert(`Route ${data.uuid} was rejected...${data.reason}`);
+
+    }
+    localStorage.setItem("uuid", JSON.stringify(uuids));
+  }
 
   function createPolygon(data) {
 
@@ -151,23 +159,5 @@ function initMap() {
   }
 
 
-function wait(delay){
-    return new Promise((resolve) => setTimeout(resolve, delay));
-}
 
-function FetchRetry(url, delay, tries, fetchOptions = {}) {
-    function onError(err){
-        triesLeft = tries - 1;
-        console.log(`trying again ${triesLeft}`)
-        if(!triesLeft){
-            throw err;
-        }
-        return wait(delay).then(() => FetchRetry(url, delay, triesLeft, fetchOptions));
-    }
-    return fetch(url,fetchOptions).then(data => data.json()).then(data => {
-      if (data.status == 1) {
-        console.log(data);
-        throw new Error("Status was not Approved");
-      }
-    }).catch(onError);
-}
+
