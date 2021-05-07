@@ -30,18 +30,43 @@ function initMap() {
   }
 
   document.getElementById("reject").onclick = () => {
+    let points = [];
     FetchRetry("/get/routes", 5000, 10, {}, (data) => {
       console.log(data);
       for (const [key, value] of Object.entries(data.routes.lat)) {
       var point = new google.maps.LatLng(value.lat, value.lng );
       let resultPath = google.maps.geometry.poly.containsLocation(point,area)
       if (resultPath) {
-        console.log({key:key,value:value,point:point,result:resultPath});
+        points.push(key);
       }
-
     }
+    console.log(points);
+    FetchRetry("/remove/latlng", 5000, 10, {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      method: "POST",
+      body: JSON.stringify({points: points})
+    }, (data) => {
+      console.log(data);
+      location.reload();
+    });
+
   })
 }
+FetchRetry("/get/routes", 2500, 10, {}, (data) => {
+  let heatmapData = [];
+  for (const [key, value] of Object.entries(data.routes.lat)) {
+    let point = new google.maps.LatLng(value.lat, value.lng );
+    heatmapData.push(point);
+  }
+  var heatmap = new google.maps.visualization.HeatmapLayer({
+    data: heatmapData
+  });
+  heatmap.setMap(map);
+  
+})
 }
 
 function remove_area_from_backlog() {

@@ -3,7 +3,7 @@ const app = express();
 const bodyParser = require("body-parser");
 const fetch = require("node-fetch");
 var rateLimit = require('function-rate-limit');
-const requirement = 1.0e-5
+const requirement = 1.0e-4
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 let paths_ = {
@@ -143,7 +143,6 @@ app.get("/get/paths", (req, res) => {
 app.get("/get/approved/:uuid", (req, res) => {
     let sent = false;
     routes.approved.forEach(e => {
-        console.log(e);
         if (e.uuid == req.params.uuid) {
             if (e.status == 200) {
                 res.json({e: e, uuid: req.params.uuid, status:200});
@@ -154,7 +153,6 @@ app.get("/get/approved/:uuid", (req, res) => {
     })
     if (!sent) {
         routes.rejected.forEach(e => {
-            console.log(e);
             if (e.uuid == req.params.uuid) {
                 if (e.status == 201) {
                     res.json({e: e, uuid: req.params.uuid, status:201, reason: e.reason});
@@ -173,7 +171,6 @@ app.get("/get/approved/:uuid", (req, res) => {
 app.get("/get/review/:uuid", (req, res) => {
     let sent = false;
     routes.review.forEach(e => {
-        console.log(e);
         if (e.uuid == req.params.uuid) {
             if (e.status == 200) {
                 res.json({status:200});
@@ -191,7 +188,6 @@ app.get("/get/review/:uuid", (req, res) => {
 app.get("/approve_routes", (req, res) => {
     for (i = 0; i < routes.review.length; i++) {
         let route = routes.review.pop();
-        console.log(route);
         route.data.route.forEach(ele => {
             routes.lat[ele.lat] = {lat: ele.lat,lng:ele.lng, class:route.data.truck.class}
             routes.lng[ele.lng] = {lng: ele.lng,lat: ele.lat, class:route.data.truck.class}
@@ -205,6 +201,10 @@ app.get("/approve_routes", (req, res) => {
 
 app.get("/approve/:uuid", (req, res) => {
     let uuid = req.params.uuid;
+    approve_route_uuid(uuid, res);
+});
+function approve_route_uuid(uuid, res) {
+    
     let approved = false;
     routes.review.forEach(element => {
         if (element.uuid == uuid) {
@@ -230,15 +230,13 @@ app.get("/approve/:uuid", (req, res) => {
     } else {
         res.json({status: 204, message: "Application not approved (UUID not found)", uuid:uuid, routes:routes});
     }
-    
-})
+}
 
 app.get("/reject/:uuid/:reason", (req, res) => {
     let uuid = req.params.uuid;
     let rejected = false;
     routes.review.forEach(element => {
         if (element.uuid == uuid) {
-            console.log(element);
             element.message = "Rejected";
             element.status = 201;
             element.reason = req.params.reason;
@@ -264,13 +262,19 @@ app.get("/reject/:uuid/:reason", (req, res) => {
 app.get("/reject_routes", (req, res) => {
     for (i = 0; i < routes.review.length; i++) {
         let route = routes.review.pop();
-        console.log(route);
         route.message = "Rejected";
         route.status = 201;
         route.reason = "Unspecified";
         routes.rejected.push(route);
     }
     res.json({status:200, message:"OK", routes:routes});
+})
+
+app.post("/remove/latlng", (req, res) => {
+    for (i = 0; i < req.body.points.length; i++) {
+        delete routes.lat[req.body.points[i]];
+    }
+    res.json({body:req.body});
 })
 
 app.get("/get/routes", (req, res) => {
@@ -288,7 +292,6 @@ function check_if_route_exists(data) {
                     if (diff(value.lng, coords[i].lng) <= requirement) {
                         if (value.class >= data.truck.class) {
                             coords.splice(i, 1);
-                            console.log({coords:coords[i], i:i});
                             i--;
                             exit = true;
                             break;
@@ -299,7 +302,7 @@ function check_if_route_exists(data) {
             if (exit) {break;}
         }
     }
-
+    console.log(coords);
     if (coords.length == 0) {
         return true;
     }
@@ -309,7 +312,7 @@ function check_if_route_exists(data) {
 function checkroute(data) {
     let message = "Waiting for approval";
     let status = 201;
-    data = parse_data(data);
+    //data = parse_data(data);
     if (check_if_route_exists(data)) {
         status = 200;
         message = "APPROVED";
@@ -345,9 +348,8 @@ app.post("/checkroute", (req, res) => {
         res.json({status: data[0], message: data[1], data:data[2], uuid:uuid})
 
     } else if (data[0] === 200) {
-        fetch(`"/approve/${uuid}"`).then(data => {
-            res.json({status: 200, message: "APPROVED", data:data[2], uuid:uuid})
-        })
+        routes.review.push({status: data[0], message:data[1], data:data[2], uuid:uuid});
+        approve_route_uuid(uuid, res);
     } else {
         res.json({status: data[0], message: data[1], data:data[2], uuid:uuid, error:203})
     }
