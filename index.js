@@ -5,6 +5,7 @@ const fetch = require("node-fetch");
 var rateLimit = require('function-rate-limit');
 const requirement = 1.0e-5
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 let paths_ = {
     bropath: {
             name: "limfjordsbroen",
@@ -107,8 +108,11 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 var routes = {
-    review: [],
     approved: [],
+    lat: {},
+    lng: {},
+    review: [],
+    rejected: [],
 };
 var request = require("request");
 const API_KEY = "AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM";
@@ -125,54 +129,162 @@ app.get("/", (req, res) => {
     res.redirect("./html/index.html")
 })
 
+app.get("/get/uuid", (req, res) => {
+    let secondsSinceEpoch = Math.round(Date.now() / 1000)
+    let uuid = `${uuidv4()}-${secondsSinceEpoch}`;
+    res.json({uuid: uuid, status:200, message:"OK"});
+})
+
 app.get("/get/paths", (req, res) => {
     res.json({paths: paths, status: 200, message: "OK"});
 })
 
+
+app.get("/get/approved/:uuid", (req, res) => {
+    let sent = false;
+    routes.approved.forEach(e => {
+        console.log(e);
+        if (e.uuid == req.params.uuid) {
+            if (e.status == 200) {
+                res.json({e: e, uuid: req.params.uuid, status:200});
+                sent = true;
+                return;
+            }
+        }
+    })
+    if (!sent) {
+        routes.rejected.forEach(e => {
+            console.log(e);
+            if (e.uuid == req.params.uuid) {
+                if (e.status == 201) {
+                    res.json({e: e, uuid: req.params.uuid, status:201, reason: e.reason});
+                    sent = true;
+                    return;
+                }
+            }
+        })
+    }
+    
+    if (!sent) {
+        res.json({status: 1})
+    }
+})
+
+
 app.get("/approve_routes", (req, res) => {
     for (i = 0; i < routes.review.length; i++) {
-        routes.approved.push(routes.review.pop());
+        let route = routes.review.pop();
+        console.log(route);
+        route.data.route.forEach(ele => {
+            routes.lat[ele.lat] = {lat: ele.lat,lng:ele.lng, class:route.data.truck.class}
+            routes.lng[ele.lng] = {lng: ele.lng,lat: ele.lat, class:route.data.truck.class}
+        })
+        route.message = "Approved";
+        route.status = 200;
+        routes.approved.push(route);
     }
     res.json({status:200, message:"OK", routes:routes});
 })
 
-app.get("/print_routes", (req, res) => {
-    res.json({routes: routes});
+app.get("/approve/:uuid", (req, res) => {
+    let uuid = req.params.uuid;
+    routes.review.forEach(element => {
+        if (element.uuid == uuid) {
+            element.data.route.forEach(ele => {
+                routes.lat[ele.lat] = {lat: ele.lat,lng:ele.lng, class:element.data.truck.class}
+                routes.lng[ele.lng] = {lng: ele.lng,lat: ele.lat, class:element.data.truck.class}
+            })
+            element.message = "Approved";
+            element.status = 200;
+            routes.approved.push(element);
+            for (i = 0; i < routes.review.length; i++) {
+                if (routes.review[i].uuid == element.uuid) {
+                    routes.review.splice(i, 1);
+                    break;
+                } 
+            }
+            return;
+        }
+    })
+    
+    res.json({status: 200, message: "OK", routes:routes});
+})
+
+
+app.get("/reject/:uuid", (req, res) => {
+    let uuid = req.params.uuid;
+    routes.review.forEach(element => {
+        if (element.uuid == uuid) {
+            console.log(element);
+            element.message = "Rejected";
+            element.status = 201;
+            element.reason = "Unspecified";
+            routes.rejected.push(element);
+            for (i = 0; i < routes.review.length; i++) {
+                if (routes.review[i].uuid == element.uuid) {
+                    routes.review.splice(i, 1);
+                    break;
+                } 
+            }
+            return;
+        }
+    })
+    
+    res.json({status: 200, message: "OK", routes:routes});
+})
+
+app.get("/reject_routes", (req, res) => {
+    for (i = 0; i < routes.review.length; i++) {
+        let route = routes.review.pop();
+        console.log(route);
+        route.message = "Rejected";
+        route.status = 201;
+        route.reason = "Unspecified";
+        routes.rejected.push(route);
+    }
+    res.json({status:200, message:"OK", routes:routes});
+})
+
+app.get("/get/routes", (req, res) => {
+    res.json({routes: routes, status:200});
 })
 function diff(a, b) { return Math.abs(a - b); };
 function check_if_route_exists(data) {
     let coords = [...data.route];
-    let min_class = Infinity;
-    routes.approved.forEach(route => {
-        route.data.route.forEach(coord => {
-            for (i = 0; i < coords.length; i++) {
-                if (diff(coords[i].lat, coord.lat <= requirement) && diff(coords[i].lng, coord.lng <= requirement)) {
-                    coords.pop(i);
-                    min_class = Math.min(route.data.truck.class, min_class);
-                    break;
-                }
+    let exit = false;
+    for (i = 0; i < coords.length; i++) {
+        exit = false;
+        for (const [key, value] of Object.entries(routes.lat)) {
+            if (diff(value.lat, coords[i].lat) <= requirement) {
+                for (const [key, value] of Object.entries(routes.lng)) {
+                    if (diff(value.lng, coords[i].lng) <= requirement) {
+                        if (value.class >= data.truck.class) {
+                            coords.splice(i, 1);
+                            console.log({coords:coords[i], i:i});
+                            i--;
+                            exit = true;
+                            break;
+                        }
+                    }     
             }
-            if (coords.length == 0) {
-                return;
             }
-        })
-        if (coords.length == 0) {
-            return;
+            if (exit) {break;}
         }
-    })
-    if (coords.length == 0 && min_class <= data.truck.class) {
-        return true;
-    } else {
-        return false;
     }
+
+    if (coords.length == 0) {
+        return true;
+    }
+    return false;
 }
 
 function checkroute(data) {
-    let message = "OK";
-    let status = 200;
+    let message = "Waiting for approval";
+    let status = 201;
     data = parse_data(data);
     if (check_if_route_exists(data)) {
-        console.log("Route already exists")
+        status = 200;
+        message = "APPROVED";
     } else {
         console.log("Cheking route");
         data.events.forEach(e => {
@@ -183,7 +295,6 @@ function checkroute(data) {
             }
         });
     }
-    
     return [status, message, data];
 }
 
@@ -197,10 +308,13 @@ function parse_data(data) {
 
 app.post("/checkroute", (req, res) => {
     let body = req.body;
+    let secondsSinceEpoch = Math.round(Date.now() / 1000)
+    let uuid = `${uuidv4()}-${secondsSinceEpoch}`;
     let data = checkroute(body);
-    if (data[0] === 200) {
-        routes.review.push({status: data[0], message:data[1], data:data[2]});
+    data.uuid = uuid;
+    if (data[0] === 201) {
+        routes.review.push({status: data[0], message:data[1], data:data[2], uuid:uuid});
     }
-    res.json({status: data[0], message: data[1], data:data[2]})
+    res.json({status: data[0], message: data[1], data:data[2], uuid:uuid})
 })
 

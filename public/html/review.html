@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>69 420 1337</title>
+        <link rel="stylesheet" type="text/css" href="../css/navbar.css" />
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+        
+        <link rel="stylesheet" type="text/css" href="../css/review.css" />
+        <link rel="stylesheet" type="text/css" href="../css/button.css" />
+        <script src="../js/review.js"></script>
+        <script src="../js/fetchRetry.js"></script>
+
+      </head>
+
+<body>
+    <div id="map"></div>
+    <script
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM&callback=initMap&libraries=places,geometry&v=weekly"
+          async
+        ></script>
+    <table id="display-table" class="fixed_header">
+        <thead>
+          <tr>
+            <th>Index</th>
+            <th>UUID</th>
+            <th>Date created</th>
+          </tr>
+        </thead>
+        <tbody id="tbody" >
+        </tbody>
+      </table>
+      <button id="approve_button" class="btn btn-success">Approve</button>
+      <button id="reject_button" class="btn btn-danger">Finish HIM</button>
+
+      <br>
+      <input id="reason" type="text"></input>
+
+
+
+    <script>
+        highlight_row();
+    </script>
+</body>
+
+</html>

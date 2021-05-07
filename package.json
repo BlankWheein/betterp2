@@ -8,7 +8,9 @@
     "express": "^4.17.1",
     "function-rate-limit": "^1.1.0",
     "node-fetch": "^2.6.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "uuid": "^8.3.2",
+    "uuid-v4": "^0.1.0"
   },
   "devDependencies": {},
   "scripts": {

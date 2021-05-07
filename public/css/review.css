@@ -1,0 +1,40 @@
+.fixed_header{
+    width: 40%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    left: 60%;
+}
+
+.fixed_header tbody{
+  display:block;
+  width: 100%;
+  overflow: scroll;
+  height: 50vh;
+}
+
+.fixed_header thead tr {
+   display: block;
+}
+
+.fixed_header thead {
+  background: black;
+  color:#fff;
+}
+
+.fixed_header th, .fixed_header td {
+  padding: 5px;
+  text-align: left;
+  width: 500px;
+}
+
+#map {
+    height: 100%;
+    float: left;
+    width: 60%;
+  }
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
