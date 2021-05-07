@@ -170,6 +170,23 @@ app.get("/get/approved/:uuid", (req, res) => {
     }
 })
 
+app.get("/get/review/:uuid", (req, res) => {
+    let sent = false;
+    routes.review.forEach(e => {
+        console.log(e);
+        if (e.uuid == req.params.uuid) {
+            if (e.status == 200) {
+                res.json({status:200});
+                sent = true;
+                return;
+            }
+        }
+    })
+    if (!sent) {
+        res.json({status: 201})
+    }
+})
+
 
 app.get("/approve_routes", (req, res) => {
     for (i = 0; i < routes.review.length; i++) {
@@ -209,7 +226,6 @@ app.get("/approve/:uuid", (req, res) => {
     
     res.json({status: 200, message: "OK", routes:routes});
 })
-
 
 app.get("/reject/:uuid/:reason", (req, res) => {
     let uuid = req.params.uuid;
@@ -314,7 +330,14 @@ app.post("/checkroute", (req, res) => {
     data.uuid = uuid;
     if (data[0] === 201) {
         routes.review.push({status: data[0], message:data[1], data:data[2], uuid:uuid});
+        res.json({status: data[0], message: data[1], data:data[2], uuid:uuid})
+
+    } else if (data[0] === 200) {
+        fetch(`"/approve/${uuid}"`).then(data => {
+            res.json({status: 200, message: "APPROVED", data:data[2], uuid:uuid})
+        })
+    } else {
+        res.json({status: data[0], message: data[1], data:data[2], uuid:uuid, error:203})
     }
-    res.json({status: data[0], message: data[1], data:data[2], uuid:uuid})
 })
 
