@@ -1,4 +1,5 @@
 function start() {
+    loadVerticalMenu();
     var bridgeClassification = document.getElementById("bridgeClassification")
     var roadClassification = document.getElementById("roadClassification")
     var height = document.getElementById("height")

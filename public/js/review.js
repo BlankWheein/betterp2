@@ -96,7 +96,7 @@ function approve() {
     let data = JSON.parse(localStorage.getItem("selected_data"));
     FetchRetry(`/approve/${data.uuid}`, 2500, 10, {}, (data) => {
         console.log(data);
-        alert(`application was approved with status ${data.status}`);
+        alert(`${data.message}(${data.status}) uuid:'${data.uuid}'`);
         clicked = false;
         location.reload();
 
@@ -115,7 +115,7 @@ function reject() {
     }
     FetchRetry(`/reject/${data.uuid}/${reason}`, 2500, 10, {}, (data) => {
         console.log(data);
-        alert(`application was rejected with status ${data.status}`);
+        alert(`${data.message}(${data.status}) uuid:'${data.uuid}'`);
         clicked = false;
         location.reload();
     })

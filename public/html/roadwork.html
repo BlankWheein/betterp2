@@ -3,11 +3,11 @@
 
     <head>
         <title>69 420 1337</title>
+        <link rel="stylesheet" type="text/css" href="../css/button.css" />
+
         <link rel="stylesheet" type="text/css" href="../css/navbar.css" />
         <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-        
         <link rel="stylesheet" type="text/css" href="../css/review.css" />
-        <link rel="stylesheet" type="text/css" href="../css/button.css" />
         <script src="../js/roadwork.js"></script>
         <script src="../js/fetchRetry.js"></script>
 
@@ -15,10 +15,16 @@
 
 <body>
     <div id="map"></div>
+    <div id="vertical-menu" class="vertical-menu"></div>
+    <script>window.onload = () => {loadVerticalMenu();}</script>
     <script
           src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM&callback=initMap&libraries=places,geometry&v=weekly"
-          async
-        ></script>
+          async></script>
+    <div>
+      <button id="clear" class="button-blue">Clear</button>
+      <button id="print" class="button-pink">Print</button>
+      <button id="reject" class="button-pink">Reject</button>
+    </div>
 </body>
 
 </html>

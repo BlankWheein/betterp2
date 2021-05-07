@@ -51,7 +51,7 @@ function createPolygon(data) {
 function loadVerticalMenu() {
   let menu = document.getElementById("vertical-menu");
   let links = [{href:"/", name:"Home"}, {href:"TruckInput.html", name:"Input Truck and classification data"},
-              {href:"map.html", name:"Map"}, {href: "review.html", name:"Review"}];
+              {href:"map.html", name:"Map"}, {href: "review.html", name:"Review"}, {href: "roadwork.html", name:"Road Work"}];
   links.forEach(e => {
     let link = document.createElement("a");
     link.href = e.href;
@@ -72,6 +72,7 @@ function createPolyline(data) {
 
   let polyline = new google.maps.Polyline({
       path: data.path,
+     
       geodesic: data.geodesic,
       strokeColor: data.color,
       strokeOpacity: data.strokeOpacity,

@@ -7,16 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home page</title>
     <link rel="stylesheet" type="text/css" href="../css/navbar.css" />
+    <script src="../js/fetchRetry.js"></script>
+
 
 </head>
 
 <body>
-    <div class="vertical-menu">
-        <a href="/">Home</a>
-        <a href="TruckInput.html">Input Truck and classification data</a>
-        <a href="map.html">Map</a>
-        <a href="review.html">Review</a>
-    </div>
+    <div id="vertical-menu" class="vertical-menu"></div>
+    <script>window.onload = () => {loadVerticalMenu();}</script>
     
 </body>
 

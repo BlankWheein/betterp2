@@ -10,7 +10,7 @@
 .vertical-menu a{
     display: inline-block;
     color: black;
-    padding: 1vw;
+    padding: 10px;
     text-decoration: none;
     text-align: center;
 }

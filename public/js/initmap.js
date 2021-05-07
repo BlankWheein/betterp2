@@ -11,7 +11,6 @@ function initMap() {
       zoom: 15,
       disableDefaultUI: true,
     });
-    
   
     document.getElementById("submit").addEventListener("click", () => { 
       let body = {

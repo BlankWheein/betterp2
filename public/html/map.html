@@ -25,12 +25,13 @@
         if (localStorage.getItem("uuid") === null) {
           localStorage.setItem("uuid", "[]");
         }
+        loadVerticalMenu();
       }
     </script>
     <div id="map"></div>
     
     <div>
-      <div id="vertical-menu" class="vertical-menu" onload="loadVerticalMenu">
+      <div id="vertical-menu" class="vertical-menu">
         
     </div><br></br>
       <button id="cake">

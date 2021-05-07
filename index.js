@@ -205,6 +205,7 @@ app.get("/approve_routes", (req, res) => {
 
 app.get("/approve/:uuid", (req, res) => {
     let uuid = req.params.uuid;
+    let approved = false;
     routes.review.forEach(element => {
         if (element.uuid == uuid) {
             element.data.route.forEach(ele => {
@@ -217,18 +218,24 @@ app.get("/approve/:uuid", (req, res) => {
             for (i = 0; i < routes.review.length; i++) {
                 if (routes.review[i].uuid == element.uuid) {
                     routes.review.splice(i, 1);
+                    approved = true;
                     break;
                 } 
             }
             return;
         }
     })
+    if (approved) {
+        res.json({status: 200, message: "Application was approved",uuid:uuid, routes:routes});
+    } else {
+        res.json({status: 204, message: "Application not approved (UUID not found)", uuid:uuid, routes:routes});
+    }
     
-    res.json({status: 200, message: "OK", routes:routes});
 })
 
 app.get("/reject/:uuid/:reason", (req, res) => {
     let uuid = req.params.uuid;
+    let rejected = false;
     routes.review.forEach(element => {
         if (element.uuid == uuid) {
             console.log(element);
@@ -239,14 +246,19 @@ app.get("/reject/:uuid/:reason", (req, res) => {
             for (i = 0; i < routes.review.length; i++) {
                 if (routes.review[i].uuid == element.uuid) {
                     routes.review.splice(i, 1);
+                    rejected = true;
                     break;
+
                 } 
             }
             return;
         }
     })
-    
-    res.json({status: 200, message: "OK", routes:routes});
+    if (rejected) {
+        res.json({status: 200, message: "Application rejected",uuid:uuid, routes:routes});
+    } else {
+        res.json({status: 204, message: "Application not rejected (UUID not found)", uuid:uuid, routes:routes});
+    }
 })
 
 app.get("/reject_routes", (req, res) => {
