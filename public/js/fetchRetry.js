@@ -48,6 +48,75 @@ function createPolygon(data) {
     })
     return polygon;
 }
+function getHexCodeFromClass(c) {
+  if (c == 0) {
+    return "#000000";
+  }
+  if (c > 0 && c <= 24) {
+    return "#ffff33";
+  }
+  if (c > 24 && c <= 30) {
+    return "#333399";
+  }
+  if (c > 30 && c <= 40) {
+    return "#993333";
+  }
+  if (c > 40 && c <= 50) {
+    return "#ffcc33";
+  }
+  if (c > 50 && c <= 60) {
+    return "#993399";
+  }
+  if (c > 60 && c <= 70) {
+    return "#33ccff";
+  }
+  if (c>70 && c<=80) {
+    return "#ff6633";
+  }
+  if (c>80 && c<=90) {
+    return "#66cc99";
+  }
+  if (c>90 && c <= 100) {
+    return "#336633";
+  }
+
+}
+
+function drawRoads(map_) {
+  FetchRetry("/get/routes", 2500, 10, {}, (data) => {
+    let lines = []
+    for (let route of data.routes.approved) {
+      lastColor = null;
+      console.log(route);
+      path = []
+      pointColor = null;
+      for (let point of route.data.route) {
+        if (data.routes.lat.hasOwnProperty(`${point.lat}`) && data.routes.lng.hasOwnProperty(`${point.lng}`)) {
+          path.push(point);
+          pointColor = getHexCodeFromClass(data.routes.lat[`${point.lat}`].class);
+          if (lastColor != pointColor && lastColor != null) {
+            let poli = createPolyline({ path: path, color: pointColor, strokeWeight: 4 });
+            lines.push(poli);
+            path = [point];
+          }
+          lastColor = pointColor;
+
+        } else {
+          let poli = createPolyline({ path: path, color: pointColor, strokeWeight: 4 });
+          lines.push(poli);
+          path = [point];
+        }
+      }
+      if (path.length > 0) {
+        let poli = createPolyline({ path: path, color: pointColor, strokeWeight: 4 });
+            lines.push(poli);
+      }
+    }
+    for (let poly of lines) {
+      poly.setMap(map_);
+    }
+  })
+}
 function loadVerticalMenu() {
   let menu = document.getElementById("vertical-menu");
   let links = [{href:"/", name:"Home"}, {href:"TruckInput.html", name:"Input Truck and classification data"},

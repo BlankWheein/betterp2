@@ -226,8 +226,12 @@ function approve_route_uuid(uuid, res) {
     routes.review.forEach(element => {
         if (element.uuid == uuid) {
             element.data.route.forEach(ele => {
-                routes.lat[ele.lat] = { lat: ele.lat, lng: ele.lng, class: element.data.truck.class }
-                routes.lng[ele.lng] = { lng: ele.lng, lat: ele.lat, class: element.data.truck.class }
+                let class_ = element.data.truck.class;
+                if (routes.lat.hasOwnProperty(`${ele.lat}`)) {
+                    class_ = Math.max(routes.lat[ele.lat].class, class_)
+                }
+                routes.lat[ele.lat] = { lat: ele.lat, lng: ele.lng, class: class_}
+                routes.lng[ele.lng] = { lng: ele.lng, lat: ele.lat, class: class_}
             })
             element.message = "Approved";
             element.status = 200;

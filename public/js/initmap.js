@@ -1,4 +1,4 @@
-
+let map;
 function initMap() {
     waypoints = {
       origin: localStorage.getItem("origin"),
@@ -7,7 +7,7 @@ function initMap() {
     }
 
     localStorage.setItem("waypoints", JSON.stringify(waypoints));
-    const map = new google.maps.Map(document.getElementById("map"), {
+    map = new google.maps.Map(document.getElementById("map"), {
       zoom: 15,
       disableDefaultUI: true,
     });
@@ -74,6 +74,7 @@ function initMap() {
       map,
       panel: undefined,
     });
+    
     init(directionsService, directionsRenderer)
 
     directionsRenderer.addListener("directions_changed", () => {
@@ -107,6 +108,10 @@ function initMap() {
       objects[objects.length - 1].setMap(map);
     }
   })
+  drawRoads(map);
+  
+
+  
 
   
   let uuids = JSON.parse(localStorage.getItem("uuid"));

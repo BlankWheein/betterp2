@@ -21,38 +21,7 @@ function initMap() {
     },
   });
   initTable();
-  FetchRetry("/get/routes", 2500, 10, {}, (data) => {
-    let heatmapData = [];
-    for (const [key, value] of Object.entries(data.routes.lat)) {
-      let point = new google.maps.LatLng(value.lat, value.lng);
-      heatmapData.push(point);
-    }
-    var heatmap = new google.maps.visualization.HeatmapLayer({
-      data: heatmapData,
-      gradient: ['rgba(0, 255, 0, 0)', '#008000', '#00FF00'],
-      opacity: 0.9,
-      radius: 15,
-      maxIntensity: 1,
-    });
-    let lines = []
-    for (let route of data.routes.approved) {
-      console.log(route);
-      path = []
-      for (let point of route.data.route) {
-        if (data.routes.lat.hasOwnProperty(`${point.lat}`) && data.routes.lng.hasOwnProperty(`${point.lng}`)) {
-          path.push(point);
-        } else {
-          lines.push(createPolyline({ path: path, map: map, color: "#00FF00", strokeWeight: 4 }));
-          path = [];
-        }
-      }
-    }
-    if (path.length > 0) {
-      lines.push(createPolyline({ path: path, map: map, color: "#00FF00", strokeWeight: 4 }));
-    }
-  }
-
-  )
+  drawRoads(map);
 }
 
 function initTable() {

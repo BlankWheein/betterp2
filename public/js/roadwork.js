@@ -68,27 +68,9 @@ FetchRetry("/get/routes", 2500, 10, {}, (data) => {
     gradient: ["rgba(0, 0, 0, 0)", "red", "red"],
     maxIntensity: 0,
   });
-  //heatmap.setMap(map);
   
 })
-FetchRetry("/get/routes", 2500, 10, {}, (data) => {
-  let lines = []
-  for (let route of data.routes.approved) {
-    console.log(route);
-    path = []
-    for (let point of route.data.route) {
-      if (data.routes.lat.hasOwnProperty(`${point.lat}`) && data.routes.lng.hasOwnProperty(`${point.lng}`)) {
-        path.push(point);
-      } else {
-        lines.push(createPolyline({ path: path, map: map, color: "#00FF00", strokeWeight: 4 }));
-        path = [];
-      }
-    }
-  }
-  if (path.length > 0) {
-    lines.push(createPolyline({ path: path, map: map, color: "#00FF00", strokeWeight: 4 }));
-  }
-})
+drawRoads(map);
 }
 
 function remove_area_from_backlog() {
