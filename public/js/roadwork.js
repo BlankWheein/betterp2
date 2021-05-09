@@ -31,6 +31,7 @@ function initMap() {
 
   document.getElementById("reject").onclick = () => {
     let points = [];
+    lngs = [];
     FetchRetry("/get/routes", 5000, 10, {}, (data) => {
       console.log(data);
       for (const [key, value] of Object.entries(data.routes.lat)) {
@@ -38,6 +39,7 @@ function initMap() {
       let resultPath = google.maps.geometry.poly.containsLocation(point,area)
       if (resultPath) {
         points.push(key);
+        lngs.push(value.lng);
       }
     }
     console.log(points);
@@ -47,7 +49,7 @@ function initMap() {
         'Content-Type': 'application/json'
       },
       method: "POST",
-      body: JSON.stringify({points: points})
+      body: JSON.stringify({points: points, lng:lngs})
     }, (data) => {
       console.log(data);
       location.reload();
@@ -62,10 +64,30 @@ FetchRetry("/get/routes", 2500, 10, {}, (data) => {
     heatmapData.push(point);
   }
   var heatmap = new google.maps.visualization.HeatmapLayer({
-    data: heatmapData
+    data: heatmapData,
+    gradient: ["rgba(0, 0, 0, 0)", "red", "red"],
+    maxIntensity: 0,
   });
-  heatmap.setMap(map);
+  //heatmap.setMap(map);
   
+})
+FetchRetry("/get/routes", 2500, 10, {}, (data) => {
+  let lines = []
+  for (let route of data.routes.approved) {
+    console.log(route);
+    path = []
+    for (let point of route.data.route) {
+      if (data.routes.lat.hasOwnProperty(`${point.lat}`) && data.routes.lng.hasOwnProperty(`${point.lng}`)) {
+        path.push(point);
+      } else {
+        lines.push(createPolyline({ path: path, map: map, color: "#00FF00", strokeWeight: 4 }));
+        path = [];
+      }
+    }
+  }
+  if (path.length > 0) {
+    lines.push(createPolyline({ path: path, map: map, color: "#00FF00", strokeWeight: 4 }));
+  }
 })
 }
 

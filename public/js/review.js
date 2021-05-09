@@ -10,126 +10,163 @@ function initMap() {
     disableDefaultUI: true,
   });
   directionsService = new google.maps.DirectionsService();
-    directionsRenderer = new google.maps.DirectionsRenderer({
-      draggable: false,
-      map,
-      panel: undefined,
-    });
+  directionsRenderer = new google.maps.DirectionsRenderer({
+    draggable: false,
+    map,
+    panel: undefined,
+    polylineOptions: {
+      strokeColor: "blue",
+      strokeOpacity: 0.5,
+      strokeWeight: 4,
+    },
+  });
   initTable();
+  FetchRetry("/get/routes", 2500, 10, {}, (data) => {
+    let heatmapData = [];
+    for (const [key, value] of Object.entries(data.routes.lat)) {
+      let point = new google.maps.LatLng(value.lat, value.lng);
+      heatmapData.push(point);
+    }
+    var heatmap = new google.maps.visualization.HeatmapLayer({
+      data: heatmapData,
+      gradient: ['rgba(0, 255, 0, 0)', '#008000', '#00FF00'],
+      opacity: 0.9,
+      radius: 15,
+      maxIntensity: 1,
+    });
+    let lines = []
+    for (let route of data.routes.approved) {
+      console.log(route);
+      path = []
+      for (let point of route.data.route) {
+        if (data.routes.lat.hasOwnProperty(`${point.lat}`) && data.routes.lng.hasOwnProperty(`${point.lng}`)) {
+          path.push(point);
+        } else {
+          lines.push(createPolyline({ path: path, map: map, color: "#00FF00", strokeWeight: 4 }));
+          path = [];
+        }
+      }
+    }
+    if (path.length > 0) {
+      lines.push(createPolyline({ path: path, map: map, color: "#00FF00", strokeWeight: 4 }));
+    }
+  }
+
+  )
 }
 
 function initTable() {
-    var tbody = document.getElementById('tbody');
-    FetchRetry("/get/routes", 5000, 10, {}, (data) => {
-        console.log(data);
-        let counter = 0;
-        data.routes.review.forEach(element => {
-            console.log(element);
+  var tbody = document.getElementById('tbody');
+  FetchRetry("/get/routes", 5000, 10, {}, (data) => {
+    console.log(data);
+    let counter = 0;
+    data.routes.review.forEach(element => {
+      console.log(element);
 
-            let tr = document.createElement("tr");
-            let index = document.createElement("td");
-            let date = document.createElement("td");
-            let uuid = document.createElement("td");
-            index.textContent = counter + "";
-            uuid.textContent = element.uuid;
-            date.textContent = element.date;
+      let tr = document.createElement("tr");
+      let index = document.createElement("td");
+      let date = document.createElement("td");
+      let uuid = document.createElement("td");
+      index.textContent = counter + "";
+      uuid.textContent = element.uuid;
+      date.textContent = element.date;
 
-            tr.appendChild(index);
-            tr.appendChild(uuid);
-            tr.appendChild(date);
+      tr.appendChild(index);
+      tr.appendChild(uuid);
+      tr.appendChild(date);
 
-            tbody.appendChild(tr);
-            counter += 1;
-        });
+      tbody.appendChild(tr);
+      counter += 1;
+    });
     highlight_row();
 
-    })
+  })
 }
 
 function on_cell_click() {
-    var table = document.getElementById('display-table');
-    var rowId = this.parentNode.rowIndex;
-    var rowsNotSelected = table.getElementsByTagName('tr');
-    for (var row = 0; row < rowsNotSelected.length; row++) {
-        rowsNotSelected[row].style.backgroundColor = "";
-        rowsNotSelected[row].classList.remove('selected');
-    }
-    var rowSelected = table.getElementsByTagName('tr')[rowId];
-    rowSelected.style.backgroundColor = "pink";
-    rowSelected.className += " selected";
+  var table = document.getElementById('display-table');
+  var rowId = this.parentNode.rowIndex;
+  var rowsNotSelected = table.getElementsByTagName('tr');
+  for (var row = 0; row < rowsNotSelected.length; row++) {
+    rowsNotSelected[row].style.backgroundColor = "";
+    rowsNotSelected[row].classList.remove('selected');
+  }
+  var rowSelected = table.getElementsByTagName('tr')[rowId];
+  rowSelected.style.backgroundColor = "pink";
+  rowSelected.className += " selected";
 
-    let uuid = rowSelected.cells[1].innerHTML;
-    FetchRetry("/get/routes", 5000, 10, {}, (data) => {
-        data.routes.review.forEach(element => {
-            if (element.uuid == uuid) {
-                console.log(element);
-                localStorage.setItem("selected_data", JSON.stringify(element));
-                directionsService.route(
-                    { 
-                      origin: element.data.waypoints.origin,
-                      destination: element.data.waypoints.destination,
-                      waypoints: element.data.waypoints.waypoint,
-                      travelMode: google.maps.TravelMode.DRIVING,
-                      avoidTolls: true,
-                      optimizeWaypoints: false,
-                    },
-                    (result, status) => {
-                      if (status === "OK") {
-                        directionsRenderer.setDirections(result);
-                        console.log(result);
-                      } else {
-                        alert("Could not display directions due to: " + status);
-                      }
-                    }
-                  );
+  let uuid = rowSelected.cells[1].innerHTML;
+  FetchRetry("/get/routes", 5000, 10, {}, (data) => {
+    data.routes.review.forEach(element => {
+      if (element.uuid == uuid) {
+        console.log(element);
+        localStorage.setItem("selected_data", JSON.stringify(element));
+        directionsService.route(
+          {
+            origin: element.data.waypoints.origin,
+            destination: element.data.waypoints.destination,
+            waypoints: element.data.waypoints.waypoint,
+            travelMode: google.maps.TravelMode.DRIVING,
+            avoidTolls: true,
+            optimizeWaypoints: false,
+          },
+          (result, status) => {
+            if (status === "OK") {
+              directionsRenderer.setDirections(result);
+              console.log(result);
+            } else {
+              alert("Could not display directions due to: " + status);
             }
-        });
+          }
+        );
+      }
+    });
     highlight_row();
 
-    })
+  })
 }
 
 function approve() {
-    console.log("clicked")
-    if (clicked) {return;}
-    clicked = true;
-    let data = JSON.parse(localStorage.getItem("selected_data"));
-    FetchRetry(`/approve/${data.uuid}`, 2500, 10, {}, (data) => {
-        console.log(data);
-        alert(`${data.message}(${data.status}) uuid:'${data.uuid}'`);
-        clicked = false;
-        location.reload();
+  console.log("clicked")
+  if (clicked) { return; }
+  clicked = true;
+  let data = JSON.parse(localStorage.getItem("selected_data"));
+  FetchRetry(`/approve/${data.uuid}`, 2500, 10, {}, (data) => {
+    console.log(data);
+    alert(`${data.message}(${data.status}) uuid:'${data.uuid}'`);
+    clicked = false;
+    location.reload();
 
-    })
+  })
 }
 
 function reject() {
-    console.log("clicked")
-    if (clicked) {return;}
-    clicked = true;
+  console.log("clicked")
+  if (clicked) { return; }
+  clicked = true;
 
-    let reason = document.getElementById("reason").value;
-    let data = JSON.parse(localStorage.getItem("selected_data"));
-    if (reason == null || undefined || reason == "") {
-      reason = "Unspecified"
-    }
-    FetchRetry(`/reject/${data.uuid}/${reason}`, 2500, 10, {}, (data) => {
-        console.log(data);
-        alert(`${data.message}(${data.status}) uuid:'${data.uuid}'`);
-        clicked = false;
-        location.reload();
-    })
+  let reason = document.getElementById("reason").value;
+  let data = JSON.parse(localStorage.getItem("selected_data"));
+  if (reason == null || undefined || reason == "") {
+    reason = "Unspecified"
+  }
+  FetchRetry(`/reject/${data.uuid}/${reason}`, 2500, 10, {}, (data) => {
+    console.log(data);
+    alert(`${data.message}(${data.status}) uuid:'${data.uuid}'`);
+    clicked = false;
+    location.reload();
+  })
 }
 
 function highlight_row() {
-    document.getElementById("approve_button").onclick = approve;
-    document.getElementById("reject_button").onclick = reject;
-    var table = document.getElementById('display-table');
-    var cells = table.getElementsByTagName('td');
+  document.getElementById("approve_button").onclick = approve;
+  document.getElementById("reject_button").onclick = reject;
+  var table = document.getElementById('display-table');
+  var cells = table.getElementsByTagName('td');
 
-    for (var i = 0; i < cells.length; i++) {
-        var cell = cells[i];
-        cell.onclick = on_cell_click; 
-    }
+  for (var i = 0; i < cells.length; i++) {
+    var cell = cells[i];
+    cell.onclick = on_cell_click;
+  }
 
 }

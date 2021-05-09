@@ -12,9 +12,21 @@ function initMap() {
       disableDefaultUI: true,
     });
   
-    document.getElementById("submit").addEventListener("click", () => { 
+    document.getElementById("submit").addEventListener("click", () => {
+      let path = []
+      var legs = directionsRenderer.getDirections().routes[0].legs;
+      for (i = 0; i < legs.length; i++) {
+        var steps = legs[i].steps;
+        for (j = 0; j < steps.length; j++) {
+          var nextSegment = steps[j].path;
+          for (k = 0; k < nextSegment.length; k++) {
+            path.push(nextSegment[k]);
+          }
+        }
+      }
       let body = {
-        route: directionsRenderer.getDirections().routes[0].overview_path,
+        lastpoint: false,
+        route: path,
         route_raw: directionsRenderer.getDirections(),
         events: JSON.parse(localStorage.getItem("place_events")),
         truck: {
@@ -22,19 +34,38 @@ function initMap() {
         },
         waypoints: JSON.parse(localStorage.getItem("waypoints"))
       }
-      fetch("/checkroute", {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-          },
-        body: JSON.stringify(body)
-      }).then(data => data.json()).then(data => {
-        console.log(data);
-        let uuid = JSON.parse(localStorage.getItem("uuid"));
-        uuid.push(data.uuid)
-        localStorage.setItem("uuid", JSON.stringify(uuid));
-        FetchRetry(`/get/approved/${data.uuid}`, 10000, 9999, {}, uuidApproved)
-    });
+      FetchRetry("/get/routes", 1000, 5, {}, (data) => {
+        console.log(data.routes.approved);
+        for (let route of data.routes.approved) {
+          let path = route.data.route;
+          let line = createPolyline({path:path});
+          console.log(path, path.length)
+          body.lastpoint = resultPath = google.maps.geometry.poly.containsLocation(
+            new google.maps.LatLng(path[path.length - 1 ].lat, path[path.length - 1 ].lng),
+            line
+          )
+          if (body.lastpoint) {
+            console.log("Last point was true");
+            break;
+          }
+        }
+        fetch("/checkroute", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+            },
+          body: JSON.stringify(body)
+        }).then(data => data.json()).then(data => {
+          console.log(data);
+          let uuid = JSON.parse(localStorage.getItem("uuid"));
+          uuid.push(data.uuid)
+          localStorage.setItem("uuid", JSON.stringify(uuid));
+          FetchRetry(`/get/approved/${data.uuid}`, 10000, 9999, {}, uuidApproved)
+      });
+        
+      })
+      
+      
     
   });
     const directionsService = new google.maps.DirectionsService();
@@ -46,6 +77,7 @@ function initMap() {
     init(directionsService, directionsRenderer)
 
     directionsRenderer.addListener("directions_changed", () => {
+      console.log(directionsRenderer.getDirections())
       computeTotalDistance(directionsRenderer.getDirections(), objects);
       var test = {
         arr: []
@@ -53,7 +85,8 @@ function initMap() {
       directionsRenderer.getDirections().routes[0].overview_path.forEach(element => {
         test.arr.push({lat: element.lat(),
                        lng: element.lng()});
-      });      
+      });
+      console.log(test);    
     });
     displayRoute(
       waypoints.origin,

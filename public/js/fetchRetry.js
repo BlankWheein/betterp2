@@ -69,12 +69,14 @@ function createPolyline(data) {
   if (data.strokeWeight === undefined) {data.strokeWeight = 2;}
   if (data.strokeOpacity === undefined) {data.strokeOpacity = 1.0;}
   if (data.spand === undefined) {data.spand = null;}
+  if (data.map === undefined) {data.map = null;}
 
   let polyline = new google.maps.Polyline({
       path: data.path,
      
       geodesic: data.geodesic,
       strokeColor: data.color,
+      map: map,
       strokeOpacity: data.strokeOpacity,
       strokeWeight: data.strokeWeight,
       data: {
