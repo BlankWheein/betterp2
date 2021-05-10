@@ -13,6 +13,9 @@ function initMap() {
     });
   
     document.getElementById("submit").addEventListener("click", () => {
+      if (JSON.parse(localStorage.getItem("forceReview")) == null) {
+        localStorage.setItem("forceReview", false);
+      }
       let path = []
       var legs = directionsRenderer.getDirections().routes[0].legs;
       for (i = 0; i < legs.length; i++) {
@@ -24,15 +27,21 @@ function initMap() {
           }
         }
       }
+      let span = JSON.parse(localStorage.getItem("Span"));
+      for (const [key, value] of Object.entries(span)) {
+        span[key] = parseInt(value);
+      }
       let body = {
         lastpoint: false,
         route: path,
         route_raw: directionsRenderer.getDirections(),
         events: JSON.parse(localStorage.getItem("place_events")),
         truck: {
-          class: JSON.parse(localStorage.getItem("BridgeClassification"))
+          class: JSON.parse(localStorage.getItem("BridgeClassification")),
+          span: span,
         },
-        waypoints: JSON.parse(localStorage.getItem("waypoints"))
+        waypoints: JSON.parse(localStorage.getItem("waypoints")),
+        forceReview: JSON.parse(localStorage.getItem("forceReview")),
       }
       FetchRetry("/get/routes", 1000, 5, {}, (data) => {
         console.log(data.routes.approved);
@@ -57,10 +66,17 @@ function initMap() {
           body: JSON.stringify(body)
         }).then(data => data.json()).then(data => {
           console.log(data);
-          let uuid = JSON.parse(localStorage.getItem("uuid"));
-          uuid.push(data.uuid)
-          localStorage.setItem("uuid", JSON.stringify(uuid));
-          FetchRetry(`/get/approved/${data.uuid}`, 10000, 9999, {}, uuidApproved)
+          if (data.status == 123) {
+            alert("Route was rejected! either apply for the permit again to force manual review or change the route");
+            localStorage.setItem("forceReview", true);
+          } else {
+            let uuid = JSON.parse(localStorage.getItem("uuid"));
+            uuid.push(data.uuid)
+            localStorage.setItem("uuid", JSON.stringify(uuid));
+            FetchRetry(`/get/approved/${data.uuid}`, 10000, 9999, {}, uuidApproved)
+            localStorage.setItem("forceReview", false);
+          }
+          
       });
         
       })
@@ -78,6 +94,7 @@ function initMap() {
     init(directionsService, directionsRenderer)
 
     directionsRenderer.addListener("directions_changed", () => {
+      localStorage.setItem("forceReview", false);
       console.log(directionsRenderer.getDirections())
       computeTotalDistance(directionsRenderer.getDirections(), objects);
       var test = {

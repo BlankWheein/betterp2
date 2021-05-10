@@ -13,7 +13,7 @@ let paths_ = {
         type: "Bro",
         color: "#FF69B4",
         name: "6631",
-    }
+    },
 };
 let data = JSON.stringify(paths_, null, 1);
 //fs.writeFileSync('./data/paths.json', data);
@@ -23,7 +23,6 @@ let paths = JSON.parse(rawdata);
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-var saved_routes = [];
 var routes = {
     approved: [],
     latlng: {},
@@ -163,16 +162,6 @@ app.get("/reject/:uuid/:reason", (req, res) => {
     }
 })
 
-app.get("/reject_routes", (req, res) => {
-    for (i = 0; i < routes.review.length; i++) {
-        let route = routes.review.pop();
-        route.message = "Rejected";
-        route.status = 201;
-        route.reason = "Unspecified";
-        routes.rejected.push(route);
-    }
-    res.json({ status: 200, message: "OK", routes: routes });
-})
 
 app.post("/remove/latlng", (req, res) => {
     for (i = 0; i < req.body.points.length; i++) {
@@ -213,30 +202,81 @@ function check_if_route_exists(data) {
     if (coords.length == 0) {
         return true;
     }
-    return checkifcoordsisbetweenpoints(data, coords);
-}
-function checkifcoordsisbetweenpoints(data, coords) {
-
     return false;
+}
+
+function getSpan(data, span) {
+ console.log(data, span);
+ let truck = data.truck.span;
+ if (span <= 2) {
+     return truck.span2;
+ }
+ if (span <= 4) {
+     return truck.span4;
+ }
+ if (span <= 6) {
+     return truck.span6;
+ }
+ if (span <= 8) {
+     return truck.span8;
+ }
+ if (span <= 10) {
+     return truck.span10;
+ }
+ if (span <= 15) {
+     return truck.span15;
+ }
+ if (span <= 20) {
+     return truck.span20;
+ }
+ if (span <= 25) {
+     return truck.span25;
+ }
+ if (span <= 30) {
+     return truck.span30;
+ }
+ if (span <= 40) {
+     return truck.span40;
+ }
+ if (span <= 50)  {
+     return truck.span50;
+ }
+ if (span <= 60) {
+     return truck.span60;
+ }
+ if (span <= 80) {
+     return truck.span80;
+ }
+ if (span <= 100) {
+     return truck.span100;
+ }
+ if (span <= 200) {
+     return truck.span200;
+ }
+ return "Unspecified";
 }
 
 function checkroute(data) {
     let message = "Waiting for approval";
     let status = 201;
     //data = parse_data(data);
-    if (check_if_route_exists(data)) {
-        status = 200;
-        message = "APPROVED";
-    } else {
+    if (!data.forceReview) {
+        if (check_if_route_exists(data)) {
+            status = 200;
+            message = "APPROVED";
+        }
         console.log("Cheking route");
         data.events.forEach(e => {
-            if (e.class < data.truck.class && e.class != null) {
-                status = 203;
-                message = "Class Exeeced"
+            let span = getSpan(data, e.spand);
+            console.log({data:data, e:e, span:span})
+            if (span > e.class && e.class != null) {
+                status = 123;
+                message = "Span exeeced"
                 return
             }
         });
     }
+    
     return [status, message, data];
 }
 

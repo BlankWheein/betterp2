@@ -97,7 +97,6 @@ function drawRoads(map_) {
         if (data.routes.latlng.hasOwnProperty(`${point.lat} ${point.lng}`)) { 
           path.push(point);
           pointColor = getHexCodeFromClass(data.routes.latlng[`${point.lat} ${point.lng}`].class);
-          console.log(route, data.routes.latlng[`${point.lat} ${point.lng}`].class);
           if (lastColor != pointColor && pointColor != null) {
             let poli = createPolyline({ path: path, color: lastColor, strokeWeight: 4 });
             lines.push(poli);
