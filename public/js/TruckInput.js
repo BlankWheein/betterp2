@@ -9,6 +9,7 @@ function start() {
 
     var maxclass2 = document.getElementById("maxclass2")
     var maxclass4 = document.getElementById("maxclass4")
+    var maxclass6 = document.getElementById("maxclass6")
     var maxclass8 = document.getElementById("maxclass8")
     var maxclass10 = document.getElementById("maxclass10")
     var maxclass15 = document.getElementById("maxclass15")
@@ -28,6 +29,7 @@ function start() {
         var span = {
             "span2": maxclass2.value,
             "span4": maxclass4.value,
+            "span6": maxclass6.value,
             "span8": maxclass8.value,
             "span10": maxclass10.value,
             "span15": maxclass15.value,
@@ -68,6 +70,7 @@ function start() {
 
         maxclass2.value = span.span2;
         maxclass4.value = span.span4;
+        maxclass6.value = span.span6;
         maxclass8.value = span.span8;
         maxclass10.value = span.span10;
         maxclass15.value = span.span15;
