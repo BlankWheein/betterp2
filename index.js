@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
-const fetch = require("node-fetch");
 const requirement = 1.0e-4
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
@@ -10,7 +9,6 @@ let paths_ = {
         path: [{lat:57.05407406813233, lng:9.96366766479781},{lat:57.05427536985332, lng:9.963297519953755},{lat:57.05461087029648, lng:9.96394661453536},{lat:57.05448250526755, lng:9.964311394961385},{lat:57.05408865525023, lng:9.9636837580519},],
         class: 100,
         spand: 16.4,
-        type: "Bro",
         color: "#FF69B4",
         name: "6631",
     },
@@ -23,18 +21,10 @@ let paths = JSON.parse(rawdata);
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-var routes = {
-    approved: [],
-    latlng: {},
-    review: [],
-    rejected: [],
-};
-var request = require("request");
-const API_KEY = "AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM";
+let rawdata2 = fs.readFileSync('./data/routes.json');
+var routes = JSON.parse(rawdata2);
 
 port = process.env.PORT || 3000
-const places = JSON.parse(fs.readFileSync('./data.txt',
-    { encoding: 'utf8', flag: 'r' }));
 
 app.listen(port, "0.0.0.0", () => console.log(`Listening at ${port}`))
 app.use(express.static(__dirname + '/public'));
@@ -54,6 +44,34 @@ app.get("/get/paths", (req, res) => {
     res.json({ paths: paths, status: 200, message: "OK" });
 })
 
+app.post("/add/bridge", (req, res) => {
+    let bridge = req.body.bridge;
+    paths[bridge.name] = bridge;
+    let data = JSON.stringify(paths, null, 1);
+    fs.writeFileSync('./data/paths.json', data);
+    res.json({status: 200, message:"OK"});
+})
+
+app.post("/update/bridge", (req, res) => {
+    let bridge = req.body.bridge;
+    let oldbridge = req.body.oldbridge;
+    console.log(oldbridge)
+    delete paths[oldbridge.Name];
+    paths[bridge.name] = bridge;
+    let data = JSON.stringify(paths, null, 1);
+    fs.writeFileSync('./data/paths.json', data);
+    res.json({status: 200, message:"OK"});
+
+})
+
+app.post("/remove/bridge", (req, res) => {
+    let name = req.body.name;
+    delete paths[name];
+    let data = JSON.stringify(paths, null, 1);
+    fs.writeFileSync('./data/paths.json', data);
+    res.json({status: 200, message:"OK"});
+
+})
 
 app.get("/get/approved/:uuid", (req, res) => {
     let sent = false;
@@ -102,6 +120,8 @@ app.get("/get/review/:uuid", (req, res) => {
 app.get("/approve/:uuid", (req, res) => {
     let uuid = req.params.uuid;
     approve_route_uuid(uuid, res);
+    let data2 = JSON.stringify(routes, null, 1);
+    fs.writeFileSync('./data/routes.json', data2);
 });
 function approve_route_uuid(uuid, res) {
     let approved = false;
@@ -109,10 +129,16 @@ function approve_route_uuid(uuid, res) {
         if (element.uuid == uuid) {
             element.data.route.forEach(ele => {
                 let class_ = element.data.truck.class;
+                let height = element.data.truck.height;
+                let length = element.data.truck.length;
+                let width = element.data.truck.width;
                 if (routes.latlng.hasOwnProperty(`${ele.lat} ${ele.lng}`)) {
                     class_ = Math.max(routes.latlng[`${ele.lat} ${ele.lng}`].class, class_)
+                    height = Math.max(routes.latlng[`${ele.lat} ${ele.lng}`].height, height)
+                    length = Math.max(routes.latlng[`${ele.lat} ${ele.lng}`].length, length)
+                    width = Math.max(routes.latlng[`${ele.lat} ${ele.lng}`].width, width)
                 }
-                routes.latlng[`${ele.lat} ${ele.lng}`] = { lat: ele.lat, lng: ele.lng, class: class_};
+                routes.latlng[`${ele.lat} ${ele.lng}`] = { lat: ele.lat, lng: ele.lng, class: class_, height:height, width:width, length:length};
                 
             })
             element.message = "Approved";
@@ -160,6 +186,8 @@ app.get("/reject/:uuid/:reason", (req, res) => {
     } else {
         res.json({ status: 204, message: "Application not rejected (UUID not found)", uuid: uuid, routes: routes });
     }
+    let data2 = JSON.stringify(routes, null, 1);
+    fs.writeFileSync('./data/routes.json', data2);
 })
 
 
@@ -186,7 +214,7 @@ function check_if_route_exists(data) {
         for (const [key, value] of Object.entries(routes.latlng)) {
             if (diff(value.lat, coords[i].lat) <= requirement) {
                     if (diff(value.lng, coords[i].lng) <= requirement) {
-                        if (value.class >= data.truck.class) {
+                        if (value.class >= data.truck.class && value.length >= data.truck.length && value.height >= data.truck.height && value.width >= data.truck.width) {
                             coords.splice(i, 1);
                             i--;
                             exit = true;
@@ -304,5 +332,9 @@ app.post("/checkroute", (req, res) => {
     } else {
         res.json({ status: data[0], message: data[1], data: data[2], uuid: uuid, error: 203 })
     }
+
+    let data2 = JSON.stringify(routes, null, 1);
+    fs.writeFileSync('./data/routes.json', data2);
+
 })
 

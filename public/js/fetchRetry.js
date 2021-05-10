@@ -13,7 +13,6 @@ function FetchRetry(url, delay, tries, fetchOptions = {}, callback) {
     }
     return fetch(url, fetchOptions).then(data => data.json()).then(data => {
       if (data.status == 1) {
-        console.log(data);
         throw new Error("Route is still under review");
       }
       callback(data);
@@ -124,7 +123,8 @@ function drawRoads(map_) {
 function loadVerticalMenu() {
   let menu = document.getElementById("vertical-menu");
   let links = [{href:"/", name:"Home"}, {href:"TruckInput.html", name:"Input Truck and classification data"},
-              {href:"map.html", name:"Map"}, {href: "review.html", name:"Review"}, {href: "roadwork.html", name:"Road Work"}];
+              {href:"map.html", name:"Map"}, {href: "review.html", name:"Review"}, {href: "roadwork.html", name:"Road Work"},
+            {href:"bridgeadder.html", name:"Bridge Adder"},{href:"bridgeupdater.html", name:"Bridge Updater"}, {href:"heatmap.html", name:"Heatmap"}];
   links.forEach(e => {
     let link = document.createElement("a");
     link.href = e.href;

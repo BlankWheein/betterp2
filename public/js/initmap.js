@@ -1,8 +1,18 @@
 let map;
 function initMap() {
+  let origin = localStorage.getItem("origin");
+  let destination = localStorage.getItem("destination");
+  if ( origin == null) {
+    origin = "57.055194235611864, 9.90511334644895";
+  }
+  if (destination == null) {
+    destination = "57.055194235611864, 9.90511334644895";
+  }
+  console.log(origin, destination)
+  
     waypoints = {
-      origin: localStorage.getItem("origin"),
-      destination: localStorage.getItem("destination"),
+      origin: origin,
+      destination: destination,
       waypoint: []
     }
 
@@ -39,6 +49,9 @@ function initMap() {
         truck: {
           class: JSON.parse(localStorage.getItem("BridgeClassification")),
           span: span,
+          width: parseFloat(localStorage.getItem("Width")),
+          height: parseFloat(localStorage.getItem("Height")),
+          length: parseFloat(localStorage.getItem("Length")),
         },
         waypoints: JSON.parse(localStorage.getItem("waypoints")),
         forceReview: JSON.parse(localStorage.getItem("forceReview")),
