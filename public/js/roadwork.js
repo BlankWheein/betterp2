@@ -34,12 +34,11 @@ function initMap() {
     lngs = [];
     FetchRetry("/get/routes", 5000, 10, {}, (data) => {
       console.log(data);
-      for (const [key, value] of Object.entries(data.routes.lat)) {
+      for (const [key, value] of Object.entries(data.routes.latlng)) {
       var point = new google.maps.LatLng(value.lat, value.lng );
       let resultPath = google.maps.geometry.poly.containsLocation(point,area)
       if (resultPath) {
-        points.push(key);
-        lngs.push(value.lng);
+        points.push({lat:value.lat, lng:value.lng});
       }
     }
     console.log(points);
@@ -49,7 +48,7 @@ function initMap() {
         'Content-Type': 'application/json'
       },
       method: "POST",
-      body: JSON.stringify({points: points, lng:lngs})
+      body: JSON.stringify({points: points})
     }, (data) => {
       console.log(data);
       location.reload();
@@ -59,9 +58,9 @@ function initMap() {
 }
 FetchRetry("/get/routes", 2500, 10, {}, (data) => {
   let heatmapData = [];
-  for (const [key, value] of Object.entries(data.routes.lat)) {
+  for (const [key, value] of Object.entries(data.routes.latlng)) {
     let point = new google.maps.LatLng(value.lat, value.lng );
-    heatmapData.push(point);
+    heatmapData.push(point);  
   }
   var heatmap = new google.maps.visualization.HeatmapLayer({
     data: heatmapData,

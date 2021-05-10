@@ -83,32 +83,36 @@ function getHexCodeFromClass(c) {
 }
 
 function drawRoads(map_) {
-  FetchRetry("/get/routes", 2500, 10, {}, (data) => {
+  FetchRetry("/get/routes", 2500, 10, {}, (data) => { 
     let lines = []
+    let lastColor = null;
+    let pointColor = null;
+
     for (let route of data.routes.approved) {
-      lastColor = null;
+      
       console.log(route);
+
       path = []
-      pointColor = null;
       for (let point of route.data.route) {
-        if (data.routes.lat.hasOwnProperty(`${point.lat}`) && data.routes.lng.hasOwnProperty(`${point.lng}`)) {
+        if (data.routes.latlng.hasOwnProperty(`${point.lat} ${point.lng}`)) { 
           path.push(point);
-          pointColor = getHexCodeFromClass(data.routes.lat[`${point.lat}`].class);
-          if (lastColor != pointColor && lastColor != null) {
-            let poli = createPolyline({ path: path, color: pointColor, strokeWeight: 4 });
+          pointColor = getHexCodeFromClass(data.routes.latlng[`${point.lat} ${point.lng}`].class);
+          console.log(route, data.routes.latlng[`${point.lat} ${point.lng}`].class);
+          if (lastColor != pointColor && pointColor != null) {
+            let poli = createPolyline({ path: path, color: lastColor, strokeWeight: 4 });
             lines.push(poli);
             path = [point];
           }
-          lastColor = pointColor;
 
         } else {
-          let poli = createPolyline({ path: path, color: pointColor, strokeWeight: 4 });
+          let poli = createPolyline({ path: path, color: lastColor, strokeWeight: 4 });
           lines.push(poli);
           path = [point];
         }
+        lastColor = pointColor;
       }
       if (path.length > 0) {
-        let poli = createPolyline({ path: path, color: pointColor, strokeWeight: 4 });
+        let poli = createPolyline({ path: path, color: lastColor, strokeWeight: 4 });
             lines.push(poli);
       }
     }
@@ -117,6 +121,7 @@ function drawRoads(map_) {
     }
   })
 }
+
 function loadVerticalMenu() {
   let menu = document.getElementById("vertical-menu");
   let links = [{href:"/", name:"Home"}, {href:"TruckInput.html", name:"Input Truck and classification data"},
