@@ -65,10 +65,27 @@ function on_cell_click() {
   rowSelected.className += " selected";
 
   let uuid = rowSelected.cells[1].innerHTML;
-  FetchRetry("/get/routes", 5000, 10, {}, (data) => {
+  FetchRetry("/get/routes", 1000, 10, {}, (data) => {
     data.routes.review.forEach(element => {
       if (element.uuid == uuid) {
         console.log(element);
+        let divtruck = document.getElementById("truck_data");
+        divtruck.querySelectorAll('*').forEach(n => n.remove());
+        var message = "";
+        for (const [key, value] of Object.entries(element.data.truck)) {
+          if (key == "span") {continue;}
+          message += `${key}: ${value}, `;
+        }
+        let p = document.createElement("p");
+        p.innerHTML = message;
+        divtruck.appendChild(p)
+        message = "";
+        for (const [key, value] of Object.entries(element.data.truck.span)) {
+          message += `${key}: ${value}, `;
+        }
+        p = document.createElement("p");
+        p.innerHTML = message;
+        divtruck.appendChild(p)
         localStorage.setItem("selected_data", JSON.stringify(element));
         directionsService.route(
           {

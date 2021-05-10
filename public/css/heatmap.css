@@ -1,0 +1,58 @@
+#map {
+    height: 99vh;
+    float: left;
+    margin-top:10px;
+    width: 100%;
+  }
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  body{
+    margin: 0;
+}
+.vertical-menu {
+    width: 100%;
+    background-color: #eee;
+    position:fixed;
+}
+
+.vertical-menu a{
+    display: inline-block;
+    color: black;
+    padding: 10px;
+    text-decoration: none;
+    text-align: center;
+}
+
+.vertical-menu a:hover{
+    background-color: white;
+}
+
+.input {
+    padding-left: 1vw;
+}
+
+.span_table {
+    border: 2px solid black;
+    margin-left: 1vw;
+    padding-left: 1vw;
+    padding: 8px;
+    border-collapse: collapse;
+}
+.span_table, th{
+    
+    border: 1.5px solid black;
+}
+
+.span_row{
+    text-align: center;
+    border: 1px solid black;
+}
+
+.maxclass_row{
+    text-align: center;
+}
