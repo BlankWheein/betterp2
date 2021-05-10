@@ -24,5 +24,5 @@ FetchRetry("/get/routes", 2500, 10, {}, (data) => {
   });
   
 })
-drawRoads(map);
+//drawRoads(map);
 }
