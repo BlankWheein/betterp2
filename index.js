@@ -106,7 +106,7 @@ app.get("/get/approved/:uuid", (req, res) => {
     }
 
     if (!sent) {
-        res.json({ status: 2 })
+        res.json({ status: 123 })
     }
 })
 
