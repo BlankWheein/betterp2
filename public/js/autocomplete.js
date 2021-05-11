@@ -1,3 +1,9 @@
+/**
+* Function that initializes all autocomplete fields
+* @param    {directionsService} directionsService   A reference to the Direction Service
+* @param    {directionsRenderer} directionsRenderer A reference to the Direction Renderer
+* @return   {VoidFunction} VOID
+*/
 function init(directionsService, directionsRenderer) {
     const options = {
         fields: ["address_component", "geometry"],
@@ -11,7 +17,13 @@ function init(directionsService, directionsRenderer) {
 
 }
 
-
+/**
+* Initializes autocomplete field 1
+* @param    {directionsService} directionsService   A reference to the Direction Service
+* @param    {directionsRenderer} directionsRenderer A reference to the Direction Renderer
+* @param    {Object} options A dictionary of options
+* @return   {VoidFunction} VOID
+*/
 function auto1(directionsService, directionsRenderer, options) {
     const input = document.getElementById("pac-input");
     const autocomplete = new google.maps.places.Autocomplete(input, options);
@@ -54,7 +66,13 @@ function auto1(directionsService, directionsRenderer, options) {
   
     });
 }
-
+/**
+* Initializes autocomplete field 2
+* @param    {directionsService} directionsService   A reference to the Direction Service
+* @param    {directionsRenderer} directionsRenderer A reference to the Direction Renderer
+* @param    {Object} options A dictionary of options
+* @return   {VoidFunction} VOID
+*/
 function auto2(directionsService, directionsRenderer, options) {
     
     const input2 = document.getElementById("pac-input2");
@@ -103,8 +121,13 @@ function auto2(directionsService, directionsRenderer, options) {
       );
     });
 }
-
-
+/**
+* Initializes autocomplete field 3
+* @param    {directionsService} directionsService   A reference to the Direction Service
+* @param    {directionsRenderer} directionsRenderer A reference to the Direction Renderer
+* @param    {Object} options A dictionary of options
+* @return   {VoidFunction} VOID
+*/
 function auto3(directionsService, directionsRenderer, options) {
     
     const input3 = document.getElementById("pac-input3");

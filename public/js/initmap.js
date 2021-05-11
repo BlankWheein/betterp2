@@ -1,4 +1,8 @@
 let map;
+/**
+* Initialises the map on the html page (This is a callback from google.maps.api)
+* @return   {void + 2*overload} Returns either void or 2 overloads
+*/
 function initMap() {
   let origin = localStorage.getItem("origin");
   let destination = localStorage.getItem("destination");
@@ -168,21 +172,25 @@ function initMap() {
     create.createpath.push({lat: event.latLng.lat(), lng: event.latLng.lng()});
   }}
 
-  function uuidApproved(data) {
-    console.log("data");
-    console.log(data);
-    let uuids = JSON.parse(localStorage.getItem("uuid"));
-    uuids.splice(uuids.indexOf(data.uuid), 1);
-    if (data.status == 200) {
-    alert(`Route ${data.uuid} was approved!`);
-    } else if (data.status == 123) {
-      console.log("UUID does not exist")
-    } else if (data.status == 201) {
-    alert(`Route ${data.uuid} was rejected...${data.reason}`);
+/**
+* When a UUID is recieved from the server this function checks what the status was
+* @return   {void} Returns Void
+*/
+function uuidApproved(data) {
+  console.log("data");
+  console.log(data);
+  let uuids = JSON.parse(localStorage.getItem("uuid"));
+  uuids.splice(uuids.indexOf(data.uuid), 1);
+  if (data.status == 200) {
+  alert(`Route ${data.uuid} was approved!`);
+  } else if (data.status == 123) {
+    console.log("UUID does not exist")
+  } else if (data.status == 201) {
+  alert(`Route ${data.uuid} was rejected...${data.reason}`);
 
-    }
-    localStorage.setItem("uuid", JSON.stringify(uuids));
   }
+  localStorage.setItem("uuid", JSON.stringify(uuids));
+}
 
   
 

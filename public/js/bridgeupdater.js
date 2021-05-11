@@ -1,4 +1,8 @@
 let map;
+/**
+* Initialises the map on the html page (This is a callback from google.maps.api)
+* @return   {void + 2*overload} Returns either void or 2 overloads
+*/
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 57.039147404431446, lng: 9.92974536576044 },
@@ -6,8 +10,9 @@ function initMap() {
     disableDefaultUI: true,
   });
 
+
   objects = [];
-  
+  //Get all objects and draw them on the map
   fetch("/get/paths").then(data => data.json()).then(data => {
     for (const [key, value] of Object.entries(data.paths)) {
       objects.push(createPolyline(value));
@@ -15,6 +20,7 @@ function initMap() {
     }
   })
 
+  //Adds a listener when clicked on the map
   google.maps.event.addListener(map, "click", (e) => {
     for (let bridge of objects) {
       if(google.maps.geometry.poly.containsLocation(e.latLng, bridge)) {
@@ -27,6 +33,7 @@ function initMap() {
       }
     }
   })
+
 
   document.getElementById("remove_bridge").onclick = () => {
     let name = document.getElementById("name").value;

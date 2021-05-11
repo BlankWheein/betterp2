@@ -3,6 +3,11 @@ let directionsRenderer;
 let directionsService;
 let clicked = false;
 
+
+/**
+* Initialises the map on the html page (This is a callback from google.maps.api)
+* @return   {void + 2*overload} Returns either void or 2 overloads
+*/
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 57.039147404431446, lng: 9.92974536576044 },
@@ -24,6 +29,10 @@ function initMap() {
   drawRoads(map);
 }
 
+/**
+* Initializes the route array
+* @return   {void} Returns void
+*/
 function initTable() {
   var tbody = document.getElementById('tbody');
   FetchRetry("/get/routes", 5000, 10, {}, (data) => {
@@ -52,6 +61,10 @@ function initTable() {
   })
 }
 
+/**
+* Adds an on cell clicked listener
+* @return   {void} Returns void
+*/
 function on_cell_click() {
   var table = document.getElementById('display-table');
   var rowId = this.parentNode.rowIndex;
@@ -112,6 +125,10 @@ function on_cell_click() {
   })
 }
 
+/**
+* Function to approve a UUID
+* @return   {void} Returns void
+*/
 function approve() {
   console.log("clicked")
   if (clicked) { return; }
@@ -126,6 +143,10 @@ function approve() {
   })
 }
 
+/**
+* Function to reject a UUID
+* @return   {void} Returns void
+*/
 function reject() {
   console.log("clicked")
   if (clicked) { return; }
@@ -144,6 +165,10 @@ function reject() {
   })
 }
 
+/**
+* Initializes on click events for page
+* @return   {void} Returns void
+*/
 function highlight_row() {
   document.getElementById("approve_button").onclick = approve;
   document.getElementById("reject_button").onclick = reject;
