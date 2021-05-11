@@ -95,9 +95,18 @@ app.get("/get/approved/:uuid", (req, res) => {
             }
         })
     }
+    if (!sent) {
+        routes.review.forEach(e => {
+            if (e.uuid == req.params.uuid) {
+                res.json({status:1});
+                sent = true;
+                return;
+            }
+        })
+    }
 
     if (!sent) {
-        res.json({ status: 1 })
+        res.json({ status: 2 })
     }
 })
 
@@ -306,14 +315,6 @@ function checkroute(data) {
     }
     
     return [status, message, data];
-}
-
-function parse_data(data) {
-    data.route.forEach(e => {
-        e.lat = parseFloat(e.lat.toFixed(5));
-        e.lng = parseFloat(e.lng.toFixed(5));
-    })
-    return data;
 }
 
 app.post("/checkroute", (req, res) => {

@@ -175,7 +175,9 @@ function initMap() {
     uuids.splice(uuids.indexOf(data.uuid), 1);
     if (data.status == 200) {
     alert(`Route ${data.uuid} was approved!`);
-    } else {
+    } else if (data.status == 123) {
+      console.log("UUID does not exist")
+    } else if (data.status == 201) {
     alert(`Route ${data.uuid} was rejected...${data.reason}`);
 
     }
