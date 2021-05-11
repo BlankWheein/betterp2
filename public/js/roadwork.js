@@ -3,6 +3,10 @@ let directionsRenderer;
 let directionsService;
 let clicked = false;
 
+/**
+* Initialises the map on the html page (This is a callback from google.maps.api)
+* @return   {void + 2*overload} Returns either void or 2 overloads
+*/
 function initMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: { lat: 57.039147404431446, lng: 9.92974536576044 },
@@ -70,14 +74,4 @@ FetchRetry("/get/routes", 2500, 10, {}, (data) => {
   
 })
 drawRoads(map);
-}
-
-function remove_area_from_backlog() {
-    console.log("clicked")
-    if (clicked) {return;}
-    clicked = true;
-    FetchRetry("/get/routes", 2500, 10, {}, (data) => {
-        console.log(data);
-        
-    })
 }
