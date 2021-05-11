@@ -1,3 +1,10 @@
+/**
+* @param {String} origin A LatLng string of the start pos
+* @param {String} destination A LatLng string of the end pos
+* @param {directionService} service A reference to the direction Service
+* @param {directionRenderer} display A reference to the direction Renderer
+* @return   {void + 2*overload} Returns either void or 2 overloads
+*/
 function displayRoute(origin, destination, service, display) {
   waypoints = JSON.parse(localStorage.getItem("waypoints"));
   localStorage.setItem("origin", JSON.stringify(origin));
@@ -25,6 +32,7 @@ function displayRoute(origin, destination, service, display) {
   );
 }
 
+//Needs to be deleted
 function fetchRetry(url, body, error) {
   fetch(url, {
     method: "POST",
@@ -51,6 +59,7 @@ function fetchRetry(url, body, error) {
     setTimeout(fetchRetry, 5000, url, body, error);
   })
 }
+
 
 function checkpoint(route, objects) {
   let events = [];
