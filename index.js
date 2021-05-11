@@ -1,49 +1,50 @@
+//Import all required packages
 const express = require('express');
 const app = express();
 const bodyParser = require("body-parser");
 const requirement = 1.0e-4
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-let paths_ = {
-    6631: {
-        path: [{lat:57.05407406813233, lng:9.96366766479781},{lat:57.05427536985332, lng:9.963297519953755},{lat:57.05461087029648, lng:9.96394661453536},{lat:57.05448250526755, lng:9.964311394961385},{lat:57.05408865525023, lng:9.9636837580519},],
-        class: 100,
-        spand: 16.4,
-        color: "#FF69B4",
-        name: "6631",
-    },
-};
-let data = JSON.stringify(paths_, null, 1);
-//fs.writeFileSync('./data/paths.json', data);
 
 let rawdata = fs.readFileSync('./data/paths.json');
 let paths = JSON.parse(rawdata);
+//Read paths data from JSON file
 app.use(bodyParser.urlencoded({
     extended: true
 }));
+
+//Read routes data from JSON file
 let rawdata2 = fs.readFileSync('./data/routes.json');
 var routes = JSON.parse(rawdata2);
 
+//Set PORT to process.env.PORT if exists, otherwise set to 3000
 port = process.env.PORT || 3000
 
+//Start server
 app.listen(port, "0.0.0.0", () => console.log(`Listening at ${port}`))
+
+//Set the folder for the client, and se the JSON send/recieve limit
 app.use(express.static(__dirname + '/public'));
 app.use(express.json({ limit: "10mb" }));
 
+//Route for index
 app.get("/", (req, res) => {
     res.redirect("./html/index.html")
 })
 
+//Route to generate a new UUID
 app.get("/get/uuid", (req, res) => {
     let secondsSinceEpoch = Math.round(Date.now() / 1000)
     let uuid = `${uuidv4()}-${secondsSinceEpoch}`;
     res.json({ uuid: uuid, status: 200, message: "OK" });
 })
 
+//Route to get all objects in the paths dict
 app.get("/get/paths", (req, res) => {
     res.json({ paths: paths, status: 200, message: "OK" });
 })
 
+//Route to add a new bridge to the objects array
 app.post("/add/bridge", (req, res) => {
     let bridge = req.body.bridge;
     paths[bridge.name] = bridge;
@@ -52,6 +53,7 @@ app.post("/add/bridge", (req, res) => {
     res.json({status: 200, message:"OK"});
 })
 
+//Route to update an existing bridge
 app.post("/update/bridge", (req, res) => {
     let bridge = req.body.bridge;
     let oldbridge = req.body.oldbridge;
@@ -64,6 +66,7 @@ app.post("/update/bridge", (req, res) => {
 
 })
 
+//Route to remove an existing bridge
 app.post("/remove/bridge", (req, res) => {
     let name = req.body.name;
     delete paths[name];
@@ -73,6 +76,8 @@ app.post("/remove/bridge", (req, res) => {
 
 })
 
+
+//Route to Fetch existing UUID
 app.get("/get/approved/:uuid", (req, res) => {
     let sent = false;
     routes.approved.forEach(e => {
@@ -110,6 +115,7 @@ app.get("/get/approved/:uuid", (req, res) => {
     }
 })
 
+//Route to fetch UUID from review array
 app.get("/get/review/:uuid", (req, res) => {
     let sent = false;
     routes.review.forEach(e => {
@@ -126,12 +132,14 @@ app.get("/get/review/:uuid", (req, res) => {
     }
 })
 
+//Route to approve UUID
 app.get("/approve/:uuid", (req, res) => {
     let uuid = req.params.uuid;
     approve_route_uuid(uuid, res);
     let data2 = JSON.stringify(routes, null, 1);
     fs.writeFileSync('./data/routes.json', data2);
 });
+//Function that runs when "/approve/:uuid gets called"
 function approve_route_uuid(uuid, res) {
     let approved = false;
     routes.review.forEach(element => {
@@ -170,6 +178,7 @@ function approve_route_uuid(uuid, res) {
     }
 }
 
+//Route to reject a UUID
 app.get("/reject/:uuid/:reason", (req, res) => {
     let uuid = req.params.uuid;
     let rejected = false;
@@ -199,7 +208,7 @@ app.get("/reject/:uuid/:reason", (req, res) => {
     fs.writeFileSync('./data/routes.json', data2);
 })
 
-
+//Route to remove a LatLng coordinate from the approved list
 app.post("/remove/latlng", (req, res) => {
     for (i = 0; i < req.body.points.length; i++) {
         delete routes.latlng[`${req.body.points[i].lat} ${req.body.points[i].lng}`];
@@ -207,10 +216,13 @@ app.post("/remove/latlng", (req, res) => {
     res.json({ body: req.body });
 })
 
+//Route to get all routes
 app.get("/get/routes", (req, res) => {
     res.json({ routes: routes, status: 200 });
 })
+//Function to get the Absolute difference between a and b
 function diff(a, b) { return Math.abs(a - b); };
+//Function that checks if a route can be approved automatically
 function check_if_route_exists(data) {
     let coords = [...data.route];
     if (data.lastpoint) {
@@ -242,6 +254,7 @@ function check_if_route_exists(data) {
     return false;
 }
 
+//Function that gets the right span value from the truck
 function getSpan(data, span) {
  console.log(data, span);
  let truck = data.truck.span;
@@ -293,6 +306,7 @@ function getSpan(data, span) {
  return "Unspecified";
 }
 
+//Function to check route against all objects
 function checkroute(data) {
     let message = "Waiting for approval";
     let status = 201;
@@ -317,6 +331,7 @@ function checkroute(data) {
     return [status, message, data];
 }
 
+//Route that calls all functions to check if route can be approved automatically
 app.post("/checkroute", (req, res) => {
     let body = req.body;
     let secondsSinceEpoch = Math.round(Date.now() / 1000)
