@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>69 420 1337</title>
+    <title>rute søger</title>
     <link rel="stylesheet" type="text/css" href="../css/navbar.css" />
+    <link rel="stylesheet" type="text/css" href="../css/map.css" />
+
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="../js/mapmain.js" defer></script>
+    <script src="../js/initmap.js" defer></script>
+    <script src="../js/autocomplete.js" defer></script>
+    <script src="../js/helper_functions.js" defer></script>
     <script
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDK_srYQ6mr32YHzvXhsLLbNs_ACYBf3bM&callback=initMap&libraries=places,geometry&v=weekly"
       defer
-    ></script>
-    <link rel="stylesheet" type="text/css" href="../css/map.css" />
-    <script src="../js/mapmain.js"></script>
-    <script src="../js/initmap.js"></script>
-    <script src="../js/autocomplete.js"></script>
-    <script src="../js/helper_functions.js"></script>
+    ></script>    
   </head>
   <body>
     
     <script>
-      window.onload = () => { 
+      window.onload = () => {
         localStorage.setItem("submitEnabled", true);
         localStorage.setItem("origin", "57.055194235611864, 9.90511334644895");
         localStorage.setItem("destination", "57.013165810575636, 9.96777520600427");
@@ -28,13 +29,11 @@
         loadVerticalMenu();
       }
     </script>
+
     <div id="map"></div>
-    
     <div>
       <div id="vertical-menu" class="vertical-menu">
-        
     </div><br></br>
-
       <button id="submit">
         Søg Rute
       </button>
@@ -50,12 +49,14 @@
           <span id="place-name" class="title"></span><br />
           <span id="place-address"></span>
         </div>
-      <p id="details"></p></div>
-      <div id="pac-container3">
-        <p>Waypoint</p>
-        <div id="listofw">
-          
-        </div>
+        <p id="details"></p>
+      </div>
+
+
+        <div id="pac-container3">
+          <p>Waypoint</p>
+          <div id="listofw">
+      </div>
 
         <input id="pac-input3" type="text" placeholder="Enter a location" />
       </div>
