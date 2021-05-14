@@ -3,6 +3,7 @@ let map;
 * Initialises the map on the html page (This is a callback from google.maps.api)
 * @return   {void + 2*overload} Returns either void or 2 overloads
 */
+
 function initMap() {
   let origin = localStorage.getItem("origin");
   let destination = localStorage.getItem("destination");
@@ -98,8 +99,6 @@ function initMap() {
         
       })
       
-      
-    
   });
     const directionsService = new google.maps.DirectionsService();
     const directionsRenderer = new google.maps.DirectionsRenderer({
@@ -113,7 +112,7 @@ function initMap() {
     directionsRenderer.addListener("directions_changed", () => {
       localStorage.setItem("forceReview", false);
       console.log(directionsRenderer.getDirections())
-      computeTotalDistance(directionsRenderer.getDirections(), objects);
+      checkpoint(directionsRenderer.getDirections().routes[0].overview_path, objects)
       var test = {
         arr: []
       }
@@ -131,11 +130,6 @@ function initMap() {
     );
   
   objects = [];
-  let create = createPolyline({name:"create", path:[]});
-  create.setMap(map);
-
-  create.createpath = [];
-  
   fetch("/get/paths").then(data => data.json()).then(data => {
     for (const [key, value] of Object.entries(data.paths)) {
       objects.push(createPolygon(value));
@@ -143,10 +137,6 @@ function initMap() {
     }
   })
   drawRoads(map);
-  
-
-  
-
   
   let uuids = JSON.parse(localStorage.getItem("uuid"));
   if (uuids !== []) {
@@ -156,21 +146,8 @@ function initMap() {
     }
     
   }
-    
-  document.getElementById("cake").onclick = () => {
-    let message = "[";
-    create.createpath.forEach(e => {
-      message += `{lat:${e.lat}, lng:${e.lng}},`;
-    })
-    message += "];";
-    console.log(message);
-  }
-  map.addListener("click", addLatLng);
-  function addLatLng(event) {
-    const path = create.getPath();
-    path.push(event.latLng);
-    create.createpath.push({lat: event.latLng.lat(), lng: event.latLng.lng()});
-  }}
+
+}
 
 /**
 * When a UUID is recieved from the server this function checks what the status was
@@ -191,9 +168,3 @@ function uuidApproved(data) {
   }
   localStorage.setItem("uuid", JSON.stringify(uuids));
 }
-
-  
-
-
-
-

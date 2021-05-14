@@ -83,24 +83,3 @@ function checkpoint(route, objects) {
   localStorage.setItem("place_events", JSON.stringify(events));
   console.log({events: events});
 }
-
-function computeTotalDistance(result, objects) {
-  var polyline = new google.maps.Polyline({
-    path: [],
-    strokeColor: '#FF0000',
-    strokeWeight: 3
-  });
-  var bounds = new google.maps.LatLngBounds();
-  var legs = result.routes[0].legs;
-  for (i = 0; i < legs.length; i++) {
-    var steps = legs[i].steps;
-    for (j = 0; j < steps.length; j++) {
-      var nextSegment = steps[j].path;
-      for (k = 0; k < nextSegment.length; k++) {
-        polyline.getPath().push(nextSegment[k]);
-        bounds.extend(nextSegment[k]);
-      }
-    }
-  }
-  checkpoint(result.routes[0].overview_path, objects)
-}
