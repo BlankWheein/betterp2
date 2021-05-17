@@ -14,7 +14,17 @@
 
 <body>
     <div id="vertical-menu" class="vertical-menu"></div>
-    <script>window.onload = () => {loadVerticalMenu();}</script>
+    <script>window.onload = () => {
+        loadVerticalMenu();
+        localStorage.setItem("submitEnabled", true);
+        localStorage.setItem("origin", "57.055194235611864, 9.90511334644895");
+        localStorage.setItem("destination", "57.013165810575636, 9.96777520600427");
+        localStorage.setItem("middle_address", JSON.stringify([]))
+        if (localStorage.getItem("uuid") === null) {
+          localStorage.setItem("uuid", "[]");
+        }
+    }
+    </script>
     
 </body>
 
