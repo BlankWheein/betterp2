@@ -13,8 +13,6 @@ function init(directionsService, directionsRenderer) {
     auto1(directionsService, directionsRenderer, options);
     auto2(directionsService, directionsRenderer, options);
     auto3(directionsService, directionsRenderer, options);
-    
-
 }
 
 /**

@@ -29,10 +29,6 @@ function initMap() {
     path.clear();
   }
 
-  document.getElementById("print").onclick = () => {
-    console.log(area);
-  }
-
   document.getElementById("reject").onclick = () => {
     let points = [];
     lngs = [];

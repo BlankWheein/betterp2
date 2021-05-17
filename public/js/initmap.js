@@ -124,13 +124,16 @@ function initMap() {
         if (data.status == 123) {
           alert("Route was rejected! either apply for the permit again to force manual review or change the route");
           localStorage.setItem("forceReview", true);
-        } else {
+        } else if (data.status == 201) {
+          alert("Route is waiting for approval")
           let uuid = JSON.parse(localStorage.getItem("uuid"));
           uuid.push(data.uuid)
           localStorage.setItem("uuid", JSON.stringify(uuid));
           FetchRetry(`/get/approved/${data.uuid}`, 10000, 9999, {}, uuidApproved)
           localStorage.setItem("forceReview", false);
-        }
+        } 
+          
+        
         
     });
       
