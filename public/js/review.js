@@ -43,15 +43,12 @@ function initTable() {
 
       let tr = document.createElement("tr");
       let index = document.createElement("td");
-      let date = document.createElement("td");
       let uuid = document.createElement("td");
       index.textContent = counter + "";
       uuid.textContent = element.uuid;
-      date.textContent = element.date;
 
       tr.appendChild(index);
       tr.appendChild(uuid);
-      tr.appendChild(date);
 
       tbody.appendChild(tr);
       counter += 1;
