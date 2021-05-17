@@ -32,7 +32,6 @@ function auto1(directionsService, directionsRenderer, options) {
     autocomplete.addListener("place_changed", () => {
       infowindow.close();
       const place = autocomplete.getPlace();
-  
       if (!place.geometry || !place.geometry.location) {
         window.alert("No details available for input: '" + place.name + "'");
         return;
@@ -54,14 +53,14 @@ function auto1(directionsService, directionsRenderer, options) {
       infowindowContent.children["place-icon"].src = place.icon;
       infowindowContent.children["place-name"].textContent = place.name;
       infowindowContent.children["place-address"].textContent = address;
-      localStorage.setItem("start_address", JSON.stringify(`${place.geometry.location.lat()}, ${place.geometry.location.lng()}`));
+      let start_address = `${place.geometry.location.lat()}, ${place.geometry.location.lng()}`;
+      localStorage.setItem("start_address", JSON.stringify(start_address));
       displayRoute(
         `${place.geometry.location.lat()}, ${place.geometry.location.lng()}`,
         waypoints.destination,
         directionsService,
         directionsRenderer
       );
-  
     });
 }
 /**
