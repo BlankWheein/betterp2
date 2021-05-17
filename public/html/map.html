@@ -20,7 +20,14 @@
     <script>
       window.onload = () => {
         loadVerticalMenu();
-      }
+        localStorage.setItem("submitEnabled", true);
+        localStorage.setItem("origin", "57.055194235611864, 9.90511334644895");
+        localStorage.setItem("destination", "57.013165810575636, 9.96777520600427");
+        localStorage.setItem("middle_address", JSON.stringify([]))
+        if (localStorage.getItem("uuid") === null) {
+          localStorage.setItem("uuid", "[]");
+        }
+    }
     </script>
 
     <div id="map"></div>
@@ -44,7 +51,7 @@
       </div>
       <p id="details"></p>
     </div>
-    
+
       <div id="pac-container2">
         <p>Slut adresse</p>
         <input id="pac-input2" type="text" placeholder="Indtast en adresse" />

@@ -26,7 +26,7 @@ function displayRoute(origin, destination, service, display) {
         display.setDirections(result);
         console.log(result);
       } else {
-        alert("Could not display directions due to: " + status);
+        location.reload()
       }
     }
   );
