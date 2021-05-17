@@ -122,10 +122,10 @@ function initMap() {
       }).then(data => data.json()).then(data => {
         console.log(data);
         if (data.status == 123) {
-          alert("Route was rejected! either apply for the permit again to force manual review or change the route");
+          alert("Rute blev afvist. Enten prøv at ansøg ruten igen for at sende den til manual godkendelse eller ændre på ruten");
           localStorage.setItem("forceReview", true);
         } else if (data.status == 201) {
-          alert("Route is waiting for approval")
+          alert("Rute afventer godkendelse")
           let uuid = JSON.parse(localStorage.getItem("uuid"));
           uuid.push(data.uuid)
           localStorage.setItem("uuid", JSON.stringify(uuid));
@@ -152,11 +152,11 @@ function uuidApproved(data) {
   let uuids = JSON.parse(localStorage.getItem("uuid"));
   uuids.splice(uuids.indexOf(data.uuid), 1);
   if (data.status == 200) {
-  alert(`Route ${data.uuid} was approved!`);
+  alert(`Rute ${data.uuid} er godkendt!`);
   } else if (data.status == 123) {
     console.log("UUID does not exist")
   } else if (data.status == 201) {
-  alert(`Route ${data.uuid} was rejected...${data.reason}`);
+  alert(`Rute ${data.uuid} blev afvist...${data.reason}`);
 
   }
   localStorage.setItem("uuid", JSON.stringify(uuids));

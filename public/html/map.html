@@ -19,13 +19,6 @@
     
     <script>
       window.onload = () => {
-        localStorage.setItem("submitEnabled", true);
-        localStorage.setItem("origin", "57.055194235611864, 9.90511334644895");
-        localStorage.setItem("destination", "57.013165810575636, 9.96777520600427");
-        localStorage.setItem("middle_address", JSON.stringify([]))
-        if (localStorage.getItem("uuid") === null) {
-          localStorage.setItem("uuid", "[]");
-        }
         loadVerticalMenu();
       }
     </script>
@@ -39,37 +32,22 @@
       </button>
     </div>
       
-      <div>
-        <div id="pac-container">
-          <p>Start Address</p>
-          <input id="pac-input" type="text" placeholder="Enter a location" />
-        </div>
-        <div id="infowindow-content">
-          <img src="" width="16" height="16" id="place-icon" />
-          <span id="place-name" class="title"></span><br />
-          <span id="place-address"></span>
-        </div>
-        <p id="details"></p>
+    <div>
+      <div id="pac-container">
+        <p>Start adresse</p>
+        <input id="pac-input" type="text" placeholder="Indtast en adresse" />
       </div>
-
-
-        <div id="pac-container3">
-          <p>Waypoint</p>
-          <div id="listofw">
+      <div id="infowindow-content">
+        <img src="" width="16" height="16" id="place-icon" />
+        <span id="place-name" class="title"></span><br />
+        <span id="place-address"></span>
       </div>
-
-        <input id="pac-input3" type="text" placeholder="Enter a location" />
-      </div>
-      <div id="infowindow-content3">
-        <img src="" width="16" height="16" id="place-icon3" />
-        <span id="place-name3" class="title"></span><br />
-        <span id="place-address3"></span>
-      </div>
-    <p id="details3"></p></div>
-
+      <p id="details"></p>
+    </div>
+    
       <div id="pac-container2">
-        <p>End Address</p>
-        <input id="pac-input2" type="text" placeholder="Enter a location" />
+        <p>Slut adresse</p>
+        <input id="pac-input2" type="text" placeholder="Indtast en adresse" />
       </div>
       <div id="infowindow-content2">
         <img src="" width="16" height="16" id="place-icon2" />
@@ -77,5 +55,19 @@
         <span id="place-address2"></span>
       </div>
     <p id="details2"></p></div>
+
+    <div id="pac-container3">
+      <p>Gennemkørselspunkt</p>
+      <div id="listofw">
+  </div>
+
+  <input id="pac-input3" type="text" placeholder="Indtast en adresse" />
+  </div>
+  <div id="infowindow-content3">
+    <img src="" width="16" height="16" id="place-icon3" />
+    <span id="place-name3" class="title"></span><br />
+    <span id="place-address3"></span>
+  </div>
+<p id="details3"></p></div>
   </body>
 </html>
