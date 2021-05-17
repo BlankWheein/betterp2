@@ -43,15 +43,12 @@ function initTable() {
 
       let tr = document.createElement("tr");
       let index = document.createElement("td");
-      let date = document.createElement("td");
       let uuid = document.createElement("td");
       index.textContent = counter + "";
       uuid.textContent = element.uuid;
-      date.textContent = element.date;
 
       tr.appendChild(index);
       tr.appendChild(uuid);
-      tr.appendChild(date);
 
       tbody.appendChild(tr);
       counter += 1;
@@ -114,7 +111,7 @@ function on_cell_click() {
               directionsRenderer.setDirections(result);
               console.log(result);
             } else {
-              alert("Could not display directions due to: " + status);
+              alert("Kan ikke vise ruteanvisninger grundet:" + status);
             }
           }
         );
@@ -155,7 +152,7 @@ function reject() {
   let reason = document.getElementById("reason").value;
   let data = JSON.parse(localStorage.getItem("selected_data"));
   if (reason == null || undefined || reason == "") {
-    reason = "Unspecified"
+    reason = "Uspecificeret"
   }
   FetchRetry(`/reject/${data.uuid}/${reason}`, 2500, 10, {}, (data) => {
     console.log(data);
@@ -179,5 +176,4 @@ function highlight_row() {
     var cell = cells[i];
     cell.onclick = on_cell_click;
   }
-
 }
