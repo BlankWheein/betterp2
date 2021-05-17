@@ -122,9 +122,9 @@ function drawRoads(map_) {
 
 function loadVerticalMenu() {
   let menu = document.getElementById("vertical-menu");
-  let links = [{href:"/", name:"Home"}, {href:"TruckInput.html", name:"Input Truck and classification data"},
-              {href:"map.html", name:"Map"}, {href: "review.html", name:"Review"}, {href: "roadwork.html", name:"Road Work"},
-            {href:"bridgeadder.html", name:"Bridge Adder"},{href:"bridgeupdater.html", name:"Bridge Updater"}, {href:"heatmap.html", name:"Heatmap"}];
+  let links = [{href:"/", name:"Hjem"}, {href:"TruckInput.html", name:"Opret vogntog"},
+              {href:"map.html", name:"Kort"}, {href: "review.html", name:"Til godkendelse"}, {href: "roadwork.html", name:"Vejarbejde"},
+            {href:"bridgeadder.html", name:"Tilføj bro"},{href:"bridgeupdater.html", name:"Bro-værktøj"}, {href:"heatmap.html", name:"Heatmap"}];
   links.forEach(e => {
     let link = document.createElement("a");
     link.href = e.href;
