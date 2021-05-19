@@ -31,14 +31,6 @@ function initMap() {
       localStorage.setItem("forceReview", false);
       console.log(directionsRenderer.getDirections())
       checkpoint(directionsRenderer.getDirections().routes[0].overview_path, objects)
-      var test = {
-        arr: []
-      }
-      directionsRenderer.getDirections().routes[0].overview_path.forEach(element => {
-        test.arr.push({lat: element.lat(),
-                       lng: element.lng()});
-      });
-      console.log(test);    
     });
     displayRoute(
       waypoints.origin,

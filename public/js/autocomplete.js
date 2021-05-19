@@ -172,7 +172,8 @@ function auto3(directionsService, directionsRenderer, options) {
       address2 = `${place3.geometry.location.lat()}, ${place3.geometry.location.lng()}`;
       let in_element = false;
       middles.forEach(element => {
-        if (element == address2) {
+        console.log(element, address2)
+        if (element.location == address2) {
           in_element = true;
         }
       })

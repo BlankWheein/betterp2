@@ -26,13 +26,12 @@ function displayRoute(origin, destination, service, display) {
         display.setDirections(result);
         console.log(result);
       } else {
-        location.reload()
+        alert("Der skete en fejl, veligst opdater siden")
       }
     }
   );
 }
 
-//Needs to be deleted
 function fetchRetry(url, body, error) {
   fetch(url, {
     method: "POST",
@@ -73,13 +72,10 @@ function checkpoint(route, objects) {
      }
     })
     if (on_route) {
-      console.log(o);
       events.push(o.data);
     } else {
-      console.log("NAN");
       events.push({class: null, name: null})
     }
   })
   localStorage.setItem("place_events", JSON.stringify(events));
-  console.log({events: events});
 }
