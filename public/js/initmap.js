@@ -54,7 +54,6 @@ function initMap() {
       console.log(uuids[i]);
       FetchRetry(`/get/approved/${uuids[i]}`, 10000, 9999, {}, uuidApproved)
     }
-    
   }
   document.getElementById("submit").addEventListener("click", () => {
     if (JSON.parse(localStorage.getItem("forceReview")) == null) {
@@ -139,17 +138,14 @@ function initMap() {
 * @return   {void} Returns Void
 */
 function uuidApproved(data) {
-  console.log("data");
-  console.log(data);
   let uuids = JSON.parse(localStorage.getItem("uuid"));
   uuids.splice(uuids.indexOf(data.uuid), 1);
   if (data.status == 200) {
-  alert(`Rute ${data.uuid} er godkendt!`);
+    alert(`Rute ${data.uuid} er godkendt!`);
   } else if (data.status == 123) {
     console.log("UUID does not exist")
   } else if (data.status == 201) {
-  alert(`Rute ${data.uuid} blev afvist...${data.reason}`);
-
+    alert(`Rute ${data.uuid} blev afvist...${data.reason}`);
   }
   localStorage.setItem("uuid", JSON.stringify(uuids));
 }

@@ -21,15 +21,15 @@ function FetchRetry(url, delay, tries, fetchOptions = {}, callback) {
 
 function createPolygon(data) {
 
-  if (data.name === undefined) {data.name = "Not Specified";}
-  if (data.path === undefined) {data.path = [];}
-  if (data.class === undefined) {data.class = 0;}
-  if (data.type === undefined) {data.type = "Not defined";}
-  if (data.color === undefined) {data.color = "#ffcc33";}
-  if (data.geodesic === undefined) {data.geodesic = false;}
-  if (data.strokeWeight === undefined) {data.strokeWeight = 2;}
-  if (data.strokeOpacity === undefined) {data.strokeOpacity = 1.0;}
-  if (data.spand === undefined) {data.spand = null;}
+  data.name = data.name ?? "Not Specified";
+  data.path = data.path ?? [];
+  data.class = data.class ?? 0;
+  data.type = data.type ?? "Not Defined";
+  data.color = data.color ?? "#ffcc33";
+  data.geodesic = data.geodesic ?? false;
+  data.strokeWeight = data.strokeWeight ?? 2;
+  data.strokeOpacity = data.strokeOpacity ?? 1.0;
+  data.spand = data.spand ?? null;
 
   let polygon = new google.maps.Polygon({
       path: data.path,
@@ -133,16 +133,15 @@ function loadVerticalMenu() {
   })
 }
 function createPolyline(data) {
-  if (data.name === undefined) {data.name = "Not Specified";}
-  if (data.path === undefined) {data.path = [];}
-  if (data.class === undefined) {data.class = 0;}
-  if (data.type === undefined) {data.type = "Not defined";}
-  if (data.color === undefined) {data.color = "#ffcc33";}
-  if (data.geodesic === undefined) {data.geodesic = false;}
-  if (data.strokeWeight === undefined) {data.strokeWeight = 2;}
-  if (data.strokeOpacity === undefined) {data.strokeOpacity = 1.0;}
-  if (data.spand === undefined) {data.spand = null;}
-  if (data.map === undefined) {data.map = null;}
+  data.name = data.name ?? "Not Specified";
+  data.path = data.path ?? [];
+  data.class = data.class ?? 0;
+  data.type = data.type ?? "Not Defined";
+  data.color = data.color ?? "#ffcc33";
+  data.geodesic = data.geodesic ?? false;
+  data.strokeWeight = data.strokeWeight ?? 2;
+  data.strokeOpacity = data.strokeOpacity ?? 1.0;
+  data.spand = data.spand ?? null;
 
   let polyline = new google.maps.Polyline({
       path: data.path,
