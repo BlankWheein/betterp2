@@ -6,16 +6,17 @@ const requirement = 1.0e-4
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
+//Read paths data from JSON file
 let rawdata = fs.readFileSync('./data/paths.json');
 let paths = JSON.parse(rawdata);
-//Read paths data from JSON file
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
 
 //Read routes data from JSON file
 let rawdata2 = fs.readFileSync('./data/routes.json');
 var routes = JSON.parse(rawdata2);
+
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
 //Set PORT to process.env.PORT if exists, otherwise set to 3000
 port = process.env.PORT || 3000

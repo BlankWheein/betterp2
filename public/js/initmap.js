@@ -123,7 +123,9 @@ function initMap() {
           localStorage.setItem("uuid", JSON.stringify(uuid));
           FetchRetry(`/get/approved/${data.uuid}`, 10000, 9999, {}, uuidApproved)
           localStorage.setItem("forceReview", false);
-        } 
+        } else if (data.status == 200) {
+          alert(`Ruten blev godkends automatisk`);
+        }
     });
     })
     

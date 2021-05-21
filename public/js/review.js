@@ -25,6 +25,7 @@ function initMap() {
       strokeWeight: 4,
     },
   });
+  highlight_row();
   initTable();
   drawRoads(map);
 }
@@ -89,6 +90,7 @@ function on_cell_click() {
         let p = document.createElement("p");
         p.innerHTML = message;
         divtruck.appendChild(p)
+
         message = "";
         for (const [key, value] of Object.entries(element.data.truck.span)) {
           message += `${key}: ${value}, `;
@@ -96,6 +98,7 @@ function on_cell_click() {
         p = document.createElement("p");
         p.innerHTML = message;
         divtruck.appendChild(p)
+        
         localStorage.setItem("selected_data", JSON.stringify(element));
         directionsService.route(
           {
@@ -127,16 +130,13 @@ function on_cell_click() {
 * @return   {void} Returns void
 */
 function approve() {
-  console.log("clicked")
   if (clicked) { return; }
   clicked = true;
   let data = JSON.parse(localStorage.getItem("selected_data"));
   FetchRetry(`/approve/${data.uuid}`, 2500, 10, {}, (data) => {
-    console.log(data);
     alert(`${data.message}(${data.status}) uuid:'${data.uuid}'`);
     clicked = false;
     location.reload();
-
   })
 }
 
@@ -145,17 +145,16 @@ function approve() {
 * @return   {void} Returns void
 */
 function reject() {
-  console.log("clicked")
   if (clicked) { return; }
   clicked = true;
-
   let reason = document.getElementById("reason").value;
   let data = JSON.parse(localStorage.getItem("selected_data"));
-  if (reason == null || undefined || reason == "") {
-    reason = "Uspecificeret"
+  if (!reason) {
+    clicked = false;
+    return alert("Du mangler at angive en begrundelse");
   }
-  FetchRetry(`/reject/${data.uuid}/${reason}`, 2500, 10, {}, (data) => {
-    console.log(data);
+  FetchRetry(`/reject/${data.uuid}/${reason}`, 2500, 10, {},
+  (data) => {
     alert(`${data.message}(${data.status}) uuid:'${data.uuid}'`);
     clicked = false;
     location.reload();
