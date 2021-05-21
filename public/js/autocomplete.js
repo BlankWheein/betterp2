@@ -32,7 +32,7 @@ function auto1(directionsService, directionsRenderer, options) {
     autocomplete.addListener("place_changed", () => {
       infowindow.close();
       const place = autocomplete.getPlace();
-      if (!place.geometry || !place.geometry.location) {
+      if (!place?.geometry?.location) {
         window.alert("No details available for input: '" + place.name + "'");
         return;
       }
@@ -82,7 +82,7 @@ function auto2(directionsService, directionsRenderer, options) {
       infowindow2.close();
       const place2 = autocomplete2.getPlace();
   
-      if (!place2.geometry || !place2.geometry.location) {
+      if (!place2?.geometry?.location) {
         // User entered the name of a Place that was not suggested and
         // pressed the Enter key, or the Place Details request failed.
         window.alert("No details available for input: '" + place2.name + "'");
@@ -137,7 +137,7 @@ function auto3(directionsService, directionsRenderer, options) {
       infowindow3.close();
       const place3 = autocomplete3.getPlace();
   
-      if (!place3.geometry || !place3.geometry.location) {
+      if (!place3?.geometry?.location) {
         // User entered the name of a Place that was not suggested and
         // pressed the Enter key, or the Place Details request failed.
         window.alert("No details available for input: '" + place3.name + "'");
