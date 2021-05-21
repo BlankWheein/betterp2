@@ -62,7 +62,6 @@ FetchRetry("/get/routes", 2500, 10, {}, (data) => {
   }
   var heatmap = new google.maps.visualization.HeatmapLayer({
     data: heatmapData,
-    map:map,
   });
   
 })
