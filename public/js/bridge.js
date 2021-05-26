@@ -39,11 +39,6 @@ function initMap() {
     path.clear();
   }
 
-  //Adds a listener when clicked on the print button
-  document.getElementById("print").onclick = () => {
-    console.log(area);
-  }
-
   //Adds a listener when clicked on the add_bridge button
   document.getElementById("add_bridge").onclick = () => {
     let class_ = parseFloat(document.getElementById("class").value);

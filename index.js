@@ -6,24 +6,23 @@ const requirement = 1.0e-4
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
+//Read paths data from JSON file
 let rawdata = fs.readFileSync('./data/paths.json');
 let paths = JSON.parse(rawdata);
-//Read paths data from JSON file
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
 
 //Read routes data from JSON file
 let rawdata2 = fs.readFileSync('./data/routes.json');
 var routes = JSON.parse(rawdata2);
 
-//Set PORT to process.env.PORT if exists, otherwise set to 3000
-port = process.env.PORT || 3000
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
-//Start server
+//Set PORT to process.env.PORT if exists, otherwise set to 3000 and start server
+port = process.env.PORT || 3000
 app.listen(port, "0.0.0.0", () => console.log(`Listening at ${port}`))
 
-//Set the folder for the client, and se the JSON send/recieve limit
+//Set the folder for the client, and set the JSON size limit
 app.use(express.static(__dirname + '/public'));
 app.use(express.json({ limit: "10mb" }));
 
@@ -76,32 +75,30 @@ app.get("/get/approved/:uuid", (req, res) => {
     routes.approved.forEach(e => {
         if (e.uuid == req.params.uuid) {
             if (e.status == 200) {
-                res.json({ e: e, uuid: req.params.uuid, status: 200 });
+                res.json({ e: e,
+                    uuid: req.params.uuid,
+                    status: 200 });
                 sent = true;
                 return;
-            }
-        }
-    })
+            }}})
     if (!sent) {
         routes.rejected.forEach(e => {
             if (e.uuid == req.params.uuid) {
                 if (e.status == 201) {
-                    res.json({ e: e, uuid: req.params.uuid, status: 201, reason: e.reason });
+                    res.json({ e: e,
+                        uuid: req.params.uuid,
+                        status: 201,
+                        reason: e.reason });
                     sent = true;
                     return;
-                }
-            }
-        })
-    }
+                }}})}
     if (!sent) {
         routes.review.forEach(e => {
             if (e.uuid == req.params.uuid) {
                 res.json({status:1});
                 sent = true;
                 return;
-            }
-        })
-    }
+            }})}
 
     if (!sent) {
         res.json({ status: 123 })
@@ -126,13 +123,17 @@ app.get("/get/review/:uuid", (req, res) => {
 })
 
 //Route to approve UUID
+
 app.get("/approve/:uuid", (req, res) => {
     let uuid = req.params.uuid;
     approve_route_uuid(uuid, res);
     let data2 = JSON.stringify(routes, null, 1);
     fs.writeFileSync('./data/routes.json', data2);
 });
+
+
 //Function that runs when "/approve/:uuid gets called"
+
 function approve_route_uuid(uuid, res) {
     let approved = false;
     routes.review.forEach(element => {
@@ -148,9 +149,10 @@ function approve_route_uuid(uuid, res) {
                     length = Math.max(routes.latlng[`${ele.lat} ${ele.lng}`].length, length)
                     width = Math.max(routes.latlng[`${ele.lat} ${ele.lng}`].width, width)
                 }
-                routes.latlng[`${ele.lat} ${ele.lng}`] = { lat: ele.lat, lng: ele.lng, class: class_, height:height, width:width, length:length};
-                
-            })
+                routes.latlng[`${ele.lat} ${ele.lng}`] = { lat: ele.lat,
+                    lng: ele.lng, class: class_,
+                    height:height, width:width, length:length};
+                })
             element.message = "Approved";
             element.status = 200;
             routes.approved.push(element);
@@ -159,19 +161,20 @@ function approve_route_uuid(uuid, res) {
                     routes.review.splice(i, 1);
                     approved = true;
                     break;
-                }
-            }
+                }}
             return;
-        }
-    })
+        }})
     if (approved) {
-        res.json({ status: 200, message: "Application was approved", uuid: uuid, routes: routes });
+        res.json({ status: 200,
+            message: "Application was approved", uuid: uuid, routes: routes });
     } else {
-        res.json({ status: 204, message: "Application not approved (UUID not found)", uuid: uuid, routes: routes });
+        res.json({ status: 204,
+            message: "Application not approved (UUID not found)", uuid: uuid, routes: routes });
     }
 }
 
 //Route to reject a UUID
+
 app.get("/reject/:uuid/:reason", (req, res) => {
     let uuid = req.params.uuid;
     let rejected = false;
@@ -187,15 +190,17 @@ app.get("/reject/:uuid/:reason", (req, res) => {
                     rejected = true;
                     break;
 
-                }
-            }
+                }}
             return;
-        }
-    })
+    }})
     if (rejected) {
-        res.json({ status: 200, message: "Application rejected", uuid: uuid, routes: routes });
+        res.json({ status: 200,
+            message: "Application rejected",
+        uuid: uuid, routes: routes });
     } else {
-        res.json({ status: 204, message: "Application not rejected (UUID not found)", uuid: uuid, routes: routes });
+        res.json({ status: 204,
+            message: "Application not rejected (UUID not found)",
+            uuid: uuid, routes: routes });
     }
     let data2 = JSON.stringify(routes, null, 1);
     fs.writeFileSync('./data/routes.json', data2);
@@ -207,19 +212,25 @@ app.post("/remove/latlng", (req, res) => {
         delete routes.latlng[`${req.body.points[i].lat} ${req.body.points[i].lng}`];
     }
     res.json({ body: req.body });
+    let data2 = JSON.stringify(routes, null, 1);
+    fs.writeFileSync('./data/routes.json', data2);
 })
 
 //Route to get all routes
 app.get("/get/routes", (req, res) => {
     res.json({ routes: routes, status: 200 });
 })
+
+
 //Function to get the Absolute difference between a and b
+
 function diff(a, b) { return Math.abs(a - b); };
+
 //Function that checks if a route can be approved automatically
+
 function check_if_route_exists(data) {
     let coords = [...data.route];
     if (data.lastpoint) {
-        console.log("spliced")
         coords.splice(coords.length - 1, 1);
     }
     let exit = false;
@@ -228,7 +239,10 @@ function check_if_route_exists(data) {
         for (const [key, value] of Object.entries(routes.latlng)) {
             if (diff(value.lat, coords[i].lat) <= requirement) {
                     if (diff(value.lng, coords[i].lng) <= requirement) {
-                        if (value.class >= data.truck.class && value.length >= data.truck.length && value.height >= data.truck.height && value.width >= data.truck.width) {
+                        if (value.class >= data.truck.class &&
+                            value.length >= data.truck.length &&
+                            value.height >= data.truck.height &&
+                            value.width >= data.truck.width) {
                             coords.splice(i, 1);
                             i--;
                             exit = true;
@@ -239,8 +253,6 @@ function check_if_route_exists(data) {
             if (exit) { break; }
         }
     }
-
-    console.log(coords);
     if (coords.length == 0) {
         return true;
     }
@@ -248,54 +260,24 @@ function check_if_route_exists(data) {
 }
 
 //Function that gets the right span value from the truck
+
 function getSpan(data, span) {
- console.log(data, span);
  let truck = data.truck.span;
- if (span <= 2) {
-     return truck.span2;
- }
- if (span <= 4) {
-     return truck.span4;
- }
- if (span <= 6) {
-     return truck.span6;
- }
- if (span <= 8) {
-     return truck.span8;
- }
- if (span <= 10) {
-     return truck.span10;
- }
- if (span <= 15) {
-     return truck.span15;
- }
- if (span <= 20) {
-     return truck.span20;
- }
- if (span <= 25) {
-     return truck.span25;
- }
- if (span <= 30) {
-     return truck.span30;
- }
- if (span <= 40) {
-     return truck.span40;
- }
- if (span <= 50)  {
-     return truck.span50;
- }
- if (span <= 60) {
-     return truck.span60;
- }
- if (span <= 80) {
-     return truck.span80;
- }
- if (span <= 100) {
-     return truck.span100;
- }
- if (span <= 200) {
-     return truck.span200;
- }
+ if (span <= 2) { return truck.span2;}
+ if (span <= 4) {return truck.span4;}
+ if (span <= 6) {return truck.span6;}
+ if (span <= 8) {return truck.span8;}
+ if (span <= 10) {return truck.span10;}
+ if (span <= 15) {return truck.span15;}
+ if (span <= 20) {return truck.span20;}
+ if (span <= 25) {return truck.span25;}
+ if (span <= 30) {return truck.span30;}
+ if (span <= 40) {return truck.span40;}
+ if (span <= 50)  {return truck.span50;}
+ if (span <= 60) {return truck.span60;}
+ if (span <= 80) {return truck.span80;}
+ if (span <= 100) {return truck.span100;}
+ if (span <= 200) {return truck.span200;}
  return "Unspecified";
 }
 

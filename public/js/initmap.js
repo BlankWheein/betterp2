@@ -114,21 +114,20 @@ function initMap() {
       }).then(data => data.json()).then(data => {
         console.log(data);
         if (data.status == 123) {
-          alert("Rute blev afvist. Enten prøv at ansøg ruten igen for at sende den til manual godkendelse eller ændre på ruten");
+          alert("Ruten blev afvist. Enten prøv at ansøg ruten igen for at" +
+          "sende den til manual godkendelse eller ændre på ruten");
           localStorage.setItem("forceReview", true);
         } else if (data.status == 201) {
-          alert("Rute afventer godkendelse")
+          alert("Ruten afventer godkendelse")
           let uuid = JSON.parse(localStorage.getItem("uuid"));
           uuid.push(data.uuid)
           localStorage.setItem("uuid", JSON.stringify(uuid));
           FetchRetry(`/get/approved/${data.uuid}`, 10000, 9999, {}, uuidApproved)
           localStorage.setItem("forceReview", false);
-        } 
-          
-        
-        
+        } else if (data.status == 200) {
+          alert(`Ruten blev godkends automatisk`);
+        }
     });
-      
     })
     
 });

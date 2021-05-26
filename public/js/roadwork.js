@@ -31,7 +31,6 @@ function initMap() {
 
   document.getElementById("reject").onclick = () => {
     let points = [];
-    lngs = [];
     FetchRetry("/get/routes", 5000, 10, {}, (data) => {
       console.log(data);
       for (const [key, value] of Object.entries(data.routes.latlng)) {
@@ -41,7 +40,6 @@ function initMap() {
         points.push({lat:value.lat, lng:value.lng});
       }
     }
-    console.log(points);
     FetchRetry("/remove/latlng", 5000, 10, {
       headers: {
         'Accept': 'application/json',
@@ -64,8 +62,6 @@ FetchRetry("/get/routes", 2500, 10, {}, (data) => {
   }
   var heatmap = new google.maps.visualization.HeatmapLayer({
     data: heatmapData,
-    gradient: ["rgba(0, 0, 0, 0)", "red", "red"],
-    maxIntensity: 0,
   });
   
 })
