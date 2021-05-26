@@ -145,6 +145,7 @@ function approve_route_uuid(uuid, res) {
                 let width = element.data.truck.width;
                 if (routes.latlng.hasOwnProperty(`${ele.lat} ${ele.lng}`)) {
                     class_ = Math.max(routes.latlng[`${ele.lat} ${ele.lng}`].class, class_)
+                    class_ = Math.min(class_, 100)
                     height = Math.max(routes.latlng[`${ele.lat} ${ele.lng}`].height, height)
                     length = Math.max(routes.latlng[`${ele.lat} ${ele.lng}`].length, length)
                     width = Math.max(routes.latlng[`${ele.lat} ${ele.lng}`].width, width)
