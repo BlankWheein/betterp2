@@ -32,13 +32,6 @@ app.get("/", (req, res) => {
     res.redirect("./html/index.html")
 })
 
-//Route to generate a new UUID
-app.get("/get/uuid", (req, res) => {
-    let secondsSinceEpoch = Math.round(Date.now() / 1000)
-    let uuid = `${uuidv4()}-${secondsSinceEpoch}`;
-    res.json({ uuid: uuid, status: 200, message: "OK" });
-})
-
 //Route to get all objects in the paths dict
 app.get("/get/paths", (req, res) => {
     res.json({ paths: paths, status: 200, message: "OK" });

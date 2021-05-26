@@ -26,7 +26,6 @@ function initMap() {
     },
   });
   initTable();
-  drawRoads(map);
 }
 
 /**

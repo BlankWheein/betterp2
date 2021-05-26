@@ -55,6 +55,7 @@ function initMap() {
       FetchRetry(`/get/approved/${uuids[i]}`, 10000, 9999, {}, uuidApproved)
     }
   }
+  
   document.getElementById("submit").addEventListener("click", () => {
     if (JSON.parse(localStorage.getItem("forceReview")) == null) {
       localStorage.setItem("forceReview", false);
