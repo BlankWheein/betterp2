@@ -103,7 +103,7 @@ function loadVerticalMenu() {
   let menu = document.getElementById("vertical-menu");
   let links = [{ href: "/", name: "Hjem" }, { href: "TruckInput.html", name: "Opret vogntog" },
   { href: "map.html", name: "Kort" }, { href: "review.html", name: "Til godkendelse" },
-  { href: "roadwork.html", name: "Vejarbejde" },
+  { href: "roadwork.html", name: "Punkt fjerner" },
   { href: "bridgeadder.html", name: "Tilføj bro" },
   { href: "bridgeupdater.html", name: "Bro-værktøj" },
   { href: "heatmap.html", name: "Heatmap" }];
